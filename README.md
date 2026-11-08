@@ -7,7 +7,7 @@ Cumpărătorii contactează direct vânzătorul (telefon, WhatsApp sau mesaje î
 
 ## Pornire
 
-Necesită **Node.js 22.13+**.
+Necesită **Node.js 20.12+** (recomandat 22).
 
 1. Copiază `.env.example` în `.env` și completează valorile din Supabase (Project Settings → API Keys):
 
