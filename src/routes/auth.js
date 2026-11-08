@@ -13,7 +13,7 @@ const siteUrl = (req) => (process.env.SITE_URL || `${req.protocol}://${req.get('
 
 r.get('/autentificare', (req, res) => {
   if (req.user) return res.redirect('/cont');
-  res.render('auth/login', { title: 'Intră în cont', form: {}, error: null, next: safeNext(req.query.next) });
+  res.render('auth/login', { title: 'Intră în cont', form: {}, error: null, next: safeNext(req.query.next), showResend: req.query.confirmare === 'retrimite' });
 });
 
 r.post('/autentificare', limiter, async (req, res) => {
@@ -22,15 +22,16 @@ r.post('/autentificare', limiter, async (req, res) => {
   const next = safeNext(req.body.next);
   const { data, error } = await req.sb.auth.signInWithPassword({ email, password });
   if (error) {
-    const msg = /not confirmed/i.test(error.message)
-      ? 'Adresa de email nu a fost încă confirmată. Deschide emailul de confirmare primit la înregistrare.'
+    const notConfirmed = /not confirmed/i.test(error.message);
+    const msg = notConfirmed
+      ? 'Adresa de email nu a fost încă confirmată. Deschide emailul de confirmare primit la înregistrare sau cere unul nou mai jos.'
       : 'Emailul sau parola nu sunt corecte. Verifică datele și încearcă din nou.';
-    return res.status(401).render('auth/login', { title: 'Intră în cont', form: { email }, error: msg, next });
+    return res.status(401).render('auth/login', { title: 'Intră în cont', form: { email }, error: msg, next, showResend: notConfirmed });
   }
   const { data: profile } = await req.sb.from('profiles').select('banned, name').eq('id', data.user.id).maybeSingle();
   if (profile && profile.banned) {
     await req.sb.auth.signOut();
-    return res.status(403).render('auth/login', { title: 'Intră în cont', form: { email }, error: 'Contul tău a fost suspendat. Scrie-ne la pagina Contact pentru detalii.', next });
+    return res.status(403).render('auth/login', { title: 'Intră în cont', form: { email }, error: 'Contul tău a fost suspendat. Scrie-ne la pagina Contact pentru detalii.', next, showResend: false });
   }
   req.session.csrf = null; // regenerare token după autentificare
   flash(req, 'success', 'Bine ai revenit!');
@@ -102,24 +103,62 @@ r.post('/inregistrare', limiter, async (req, res) => {
   res.render('auth/check-email', { title: 'Verifică emailul', email: form.email });
 });
 
-// Linkurile din emailuri (confirmare cont, resetare parolă) ajung aici
+// Linkurile din emailuri (confirmare cont, resetare parolă) ajung aici.
+// Variante acceptate:
+//  - ?token_hash=...&type=email|recovery  (recomandat: funcționează din orice browser sau dispozitiv)
+//  - ?code=...                            (fluxul PKCE implicit: merge doar în browserul unde s-a creat contul)
+//  - ?error=...&error_code=...            (Supabase a respins linkul: expirat sau deja folosit)
+const OTP_TYPES = ['email', 'signup', 'recovery', 'invite', 'magiclink', 'email_change'];
 r.get('/auth/confirm', async (req, res) => {
   const next = safeNext(req.query.next);
+  const isRecovery = next === '/cont/parola-noua' || req.query.type === 'recovery';
+
+  if (req.query.error || req.query.error_code) {
+    flash(req, 'error', isRecovery
+      ? 'Linkul de resetare a expirat sau a fost deja folosit. Cere unul nou mai jos.'
+      : 'Linkul de confirmare a fost deja folosit sau a expirat. Dacă ți-ai confirmat deja contul, intră în cont. Altfel, cere un email nou de confirmare.');
+    return res.redirect(isRecovery ? '/parola-uitata' : '/autentificare?confirmare=retrimite');
+  }
+
   let error = null;
-  if (req.query.code) {
+  if (req.query.token_hash) {
+    const type = OTP_TYPES.includes(String(req.query.type)) ? String(req.query.type) : 'email';
+    ({ error } = await req.sb.auth.verifyOtp({ token_hash: String(req.query.token_hash), type }));
+  } else if (req.query.code) {
     ({ error } = await req.sb.auth.exchangeCodeForSession(String(req.query.code)));
-  } else if (req.query.token_hash && req.query.type) {
-    ({ error } = await req.sb.auth.verifyOtp({ token_hash: String(req.query.token_hash), type: String(req.query.type) }));
+    // Linkul a fost deschis în alt browser / altă aplicație decât cel în care s-a creat contul.
+    // Supabase a confirmat deja emailul înainte de redirecționare; doar sesiunea nu poate fi pornită aici.
+    if (error && /verifier|pkce/i.test(`${error.code || ''} ${error.message || ''}`)) {
+      if (isRecovery) {
+        flash(req, 'error', 'Deschide linkul de resetare în același browser în care l-ai cerut, sau cere un link nou de aici.');
+        return res.redirect('/parola-uitata');
+      }
+      flash(req, 'success', 'Adresa de email a fost confirmată! Intră în cont cu emailul și parola alese.');
+      return res.redirect('/autentificare?next=' + encodeURIComponent(next));
+    }
   } else {
     error = new Error('missing code');
   }
+
   if (error) {
-    flash(req, 'error', 'Linkul a expirat sau a fost deja folosit. Cere unul nou.');
-    return res.redirect('/autentificare');
+    flash(req, 'error', isRecovery
+      ? 'Linkul de resetare a expirat sau a fost deja folosit. Cere unul nou.'
+      : 'Linkul de confirmare a expirat sau a fost deja folosit. Dacă ți-ai confirmat deja contul, intră în cont.');
+    return res.redirect(isRecovery ? '/parola-uitata' : '/autentificare?confirmare=retrimite');
   }
   req.session.csrf = null;
-  flash(req, 'success', next === '/cont/parola-noua' ? 'Alege o parolă nouă pentru contul tău.' : 'Adresa de email a fost confirmată. Bine ai venit!');
-  res.redirect(next);
+  flash(req, 'success', isRecovery ? 'Alege o parolă nouă pentru contul tău.' : 'Adresa de email a fost confirmată. Bine ai venit pe Constria!');
+  res.redirect(isRecovery ? '/cont/parola-noua' : next);
+});
+
+// Retrimite emailul de confirmare
+r.post('/confirmare/retrimite', limiter, async (req, res) => {
+  const email = (req.body.email || '').trim().toLowerCase();
+  if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    await req.sb.auth.resend({ type: 'signup', email, options: { emailRedirectTo: `${siteUrl(req)}/auth/confirm?next=/cont` } });
+  }
+  // Răspuns generic: nu dezvăluim dacă emailul are cont
+  res.render('auth/check-email', { title: 'Verifică emailul', email });
 });
 
 r.post('/deconectare', async (req, res) => {

@@ -39,7 +39,17 @@ Necesită **Node.js 22.13+**.
 1. **Authentication → URL Configuration**
    - *Site URL*: adresa site-ului (local: `http://localhost:3000`, în producție: `https://domeniul-tau.ro`)
    - *Redirect URLs*: adaugă `http://localhost:3000/auth/confirm` și `https://domeniul-tau.ro/auth/confirm`
-2. **Authentication → Emails / SMTP**: serviciul de email inclus în Supabase trimite doar câteva emailuri pe oră. Înainte de lansare configurează un SMTP propriu (ex. Resend, Brevo, Amazon SES), altfel înregistrările și resetările de parolă se vor bloca.
+2. **Authentication → Email Templates** (recomandat, ca linkurile să meargă din orice browser, aplicație de email sau telefon):
+   - *Confirm signup* – înlocuiește linkul cu:
+     ```html
+     <a href="{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=email&next=/cont">Confirmă adresa de email</a>
+     ```
+   - *Reset password* – înlocuiește linkul cu:
+     ```html
+     <a href="{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=recovery&next=/cont/parola-noua">Alege o parolă nouă</a>
+     ```
+   Fără această modificare, linkul implicit funcționează complet doar în browserul în care s-a creat contul; în alt browser emailul se confirmă, dar utilizatorul trebuie apoi să intre în cont manual.
+3. **Authentication → Emails / SMTP**: serviciul de email inclus în Supabase trimite doar câteva emailuri pe oră. Înainte de lansare configurează un SMTP propriu (ex. Resend, Brevo, Amazon SES), altfel înregistrările și resetările de parolă se vor bloca.
 
 ### Cont de administrator
 

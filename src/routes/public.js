@@ -10,7 +10,13 @@ const { listingUrl } = require('../helpers');
 const r = express.Router();
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-r.get('/', async (req, res) => {
+r.get('/', async (req, res, next) => {
+  // Dacă adresa de întoarcere nu e în lista Supabase, linkul din email ajunge pe pagina principală
+  if (req.query.code || req.query.token_hash || req.query.error_code) {
+    const qs = new URLSearchParams(req.query);
+    if (!qs.has('next')) qs.set('next', '/cont');
+    return res.redirect('/auth/confirm?' + qs.toString());
+  }
   const sb = req.sb;
   const uid = req.user ? req.user.id : null;
   const [featured, machines, tools, counts, sellers, stats, posts] = await Promise.all([

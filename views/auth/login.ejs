@@ -28,6 +28,14 @@
         </div>
         <button class="btn btn--lg btn--block" type="submit">Intră în cont</button>
       </form>
+      <% if (typeof showResend !== 'undefined' && showResend) { %>
+        <form class="form-card stack" method="post" action="/confirmare/retrimite" style="margin-top:24px;padding:20px" data-loading>
+          <input type="hidden" name="_csrf" value="<%= csrf %>">
+          <div><h2 style="font-size:1.4rem">Nu ai primit emailul de confirmare?</h2><p class="muted" style="margin:6px 0 0">Îți trimitem un link nou. Deschide-l din aplicația de email, de pe orice dispozitiv.</p></div>
+          <div class="field"><label for="r-email">Email</label><input class="input" id="r-email" name="email" type="email" autocomplete="email" required value="<%= form.email || '' %>"></div>
+          <button class="btn btn--ghost" type="submit"><i data-lucide="mail"></i> Retrimite emailul de confirmare</button>
+        </form>
+      <% } %>
     </div>
   </div>
 </div>
