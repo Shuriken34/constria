@@ -1,0 +1,6 @@
+<% var keys = Object.keys(errors || {}); if (keys.length) { %>
+<div class="error-summary" tabindex="-1" data-error-summary role="alert">
+  <h2>Mai sunt <%= keys.length === 1 ? 'o problemă' : keys.length + ' probleme' %> de rezolvat:</h2>
+  <ul><% keys.forEach(function (k) { %><li><a href="#f-<%= k %>"><%= errors[k] %></a></li><% }) %></ul>
+</div>
+<% } %>

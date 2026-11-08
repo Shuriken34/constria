@@ -1,0 +1,63 @@
+<%- include('../partials/head') %>
+<% function inv(n) { return errors[n] ? 'aria-invalid="true" aria-describedby="' + n + '-err"' : ''; } %>
+<div class="container account">
+  <%- include('../partials/account-nav') %>
+  <div>
+    <div class="account-head"><h1 class="display display-l">Setări cont</h1></div>
+    <%- include('../partials/error-summary') %>
+    <form class="form-card stack" method="post" action="/cont/setari" enctype="multipart/form-data" novalidate data-loading>
+      <input type="hidden" name="_csrf" value="<%= csrf %>">
+      <div><h2>Profil</h2><p class="muted">Aceste date apar pe anunțurile tale și pe profilul public.</p></div>
+      <div style="display:flex;gap:18px;align-items:center;flex-wrap:wrap">
+        <span class="avatar avatar--lg"><% if (form.avatar) { %><img src="<%= imgSrc(form.avatar) %>" alt="Fotografia de profil"><% } else { %><%= initials(form.company_name || form.name) %><% } %></span>
+        <div class="field">
+          <label for="f-avatar">Fotografie sau logo</label>
+          <input id="f-avatar" name="avatar" type="file" accept="image/jpeg,image/png,image/webp" <%- inv('avatar') %>>
+          <%- include('../partials/field-error', { name: 'avatar' }) %>
+          <% if (form.avatar) { %><label class="check" style="margin-top:6px"><input type="checkbox" name="remove_avatar" value="1"> Șterge fotografia</label><% } %>
+        </div>
+      </div>
+      <fieldset>
+        <legend>Tip de cont</legend>
+        <div class="choice-row">
+          <label class="choice"><input type="radio" name="account_type" value="persoana" data-account-type <%= form.account_type !== 'firma' ? 'checked' : '' %>><span><i data-lucide="user"></i> Persoană fizică</span></label>
+          <label class="choice"><input type="radio" name="account_type" value="firma" data-account-type <%= form.account_type === 'firma' ? 'checked' : '' %>><span><i data-lucide="building-2"></i> Firmă</span></label>
+        </div>
+      </fieldset>
+      <div class="form-grid" data-company-fields <%= form.account_type === 'firma' ? '' : 'hidden' %>>
+        <div class="field"><label for="f-company_name">Denumire firmă</label><input class="input" id="f-company_name" name="company_name" value="<%= form.company_name || '' %>" <%- inv('company_name') %>><%- include('../partials/field-error', { name: 'company_name' }) %></div>
+        <div class="field"><label for="f-cui">CUI</label><input class="input" id="f-cui" name="cui" value="<%= form.cui || '' %>" <%- inv('cui') %>><%- include('../partials/field-error', { name: 'cui' }) %></div>
+      </div>
+      <div class="form-grid">
+        <div class="field"><label for="f-name">Nume</label><input class="input" id="f-name" name="name" autocomplete="name" value="<%= form.name %>" <%- inv('name') %>><%- include('../partials/field-error', { name: 'name' }) %></div>
+        <div class="field"><label for="f-email">Email</label><input class="input" id="f-email" value="<%= user.email %>" readonly aria-describedby="email-help"><p class="help" id="email-help">Emailul nu poate fi schimbat.</p></div>
+        <div class="field"><label for="f-phone">Telefon</label><input class="input" id="f-phone" name="phone" type="tel" autocomplete="tel" value="<%= form.phone || '' %>" <%- inv('phone') %>><%- include('../partials/field-error', { name: 'phone' }) %></div>
+        <div class="field"><label for="f-county">Județ</label><select class="select" id="f-county" name="county" <%- inv('county') %>><option value="">Alege</option><% counties.forEach(function (c) { %><option <%= form.county === c ? 'selected' : '' %>><%= c %></option><% }) %></select><%- include('../partials/field-error', { name: 'county' }) %></div>
+        <div class="field"><label for="f-city">Localitate</label><input class="input" id="f-city" name="city" value="<%= form.city || '' %>" <%- inv('city') %>><%- include('../partials/field-error', { name: 'city' }) %></div>
+        <div class="field full"><label for="f-about">Despre mine / firmă</label><textarea class="textarea" id="f-about" name="about" maxlength="1000" style="min-height:110px" placeholder="ex: Depozit de materiale în Florești, program L–S 8–17."><%= form.about || '' %></textarea></div>
+      </div>
+      <button class="btn" type="submit" style="align-self:flex-start"><i data-lucide="save"></i> Salvează profilul</button>
+    </form>
+
+    <form class="form-card stack" id="parola" method="post" action="/cont/parola" data-loading>
+      <input type="hidden" name="_csrf" value="<%= csrf %>">
+      <div><h2>Schimbă parola</h2></div>
+      <div class="form-grid">
+        <div class="field full"><label for="p-current">Parola actuală</label><input class="input" id="p-current" name="current" type="password" autocomplete="current-password" required></div>
+        <div class="field"><label for="p-new">Parola nouă</label><input class="input" id="p-new" name="password" type="password" autocomplete="new-password" minlength="8" required aria-describedby="p-help"><p class="help" id="p-help">Minimum 8 caractere.</p></div>
+        <div class="field"><label for="p-new2">Confirmă parola nouă</label><input class="input" id="p-new2" name="password2" type="password" autocomplete="new-password" required></div>
+      </div>
+      <button class="btn" type="submit" style="align-self:flex-start">Schimbă parola</button>
+    </form>
+
+    <% if (user.role !== 'admin') { %>
+    <form class="form-card stack" id="sterge" method="post" action="/cont/sterge-cont" data-confirm="Ești sigur? Contul, anunțurile și mesajele tale vor fi șterse definitiv. Acțiunea nu poate fi anulată." style="border-color:var(--red-strong)">
+      <input type="hidden" name="_csrf" value="<%= csrf %>">
+      <div><h2 style="color:var(--red-strong)">Șterge contul</h2><p class="muted">Toate anunțurile, mesajele și recenziile tale vor fi șterse definitiv.</p></div>
+      <div class="field" style="max-width:360px"><label for="d-pass">Confirmă cu parola</label><input class="input" id="d-pass" name="password" type="password" autocomplete="current-password" required></div>
+      <button class="btn btn--red" type="submit" style="align-self:flex-start"><i data-lucide="trash-2"></i> Șterge definitiv contul</button>
+    </form>
+    <% } %>
+  </div>
+</div>
+<%- include('../partials/foot') %>

@@ -1,0 +1,18 @@
+<%- include('../partials/head') %>
+<section class="section">
+  <div class="container" style="max-width:520px">
+    <h1 class="display display-m">Ai uitat parola?</h1>
+    <% if (sent) { %>
+      <div class="notice" style="margin-top:24px"><i data-lucide="mail-check"></i><p>Dacă adresa există în sistem, vei primi un email cu pașii de resetare. Nu ai primit nimic în 10 minute? <a href="/contact"><strong>Scrie-ne</strong></a>.</p></div>
+      <p style="margin-top:24px"><a class="btn" href="/autentificare">Înapoi la autentificare</a></p>
+    <% } else { %>
+      <p class="muted" style="margin:12px 0 24px">Scrie adresa de email a contului și îți trimitem un link de resetare.</p>
+      <form class="stack" method="post" action="/parola-uitata" data-loading>
+        <input type="hidden" name="_csrf" value="<%= csrf %>">
+        <div class="field"><label for="f-email">Email</label><input class="input" id="f-email" name="email" type="email" autocomplete="email" required></div>
+        <button class="btn btn--lg" type="submit">Trimite linkul</button>
+      </form>
+    <% } %>
+  </div>
+</section>
+<%- include('../partials/foot') %>

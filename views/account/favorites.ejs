@@ -1,0 +1,13 @@
+<%- include('../partials/head') %>
+<div class="container account">
+  <%- include('../partials/account-nav') %>
+  <div>
+    <div class="account-head"><h1 class="display display-l">Anunțuri salvate</h1></div>
+    <% if (rows.length) { %>
+      <div class="grid-cards"><% rows.forEach(function (l) { %><%- include('../partials/card', { l: l }) %><% }) %></div>
+    <% } else { %>
+      <div class="empty"><i data-lucide="heart" class="big"></i><h2>Nicio favorită</h2><p>Apasă pe inimioara de pe orice anunț ca să îl salvezi aici și să îl găsești ușor mai târziu.</p><a class="btn" href="/anunturi">Caută materiale</a></div>
+    <% } %>
+  </div>
+</div>
+<%- include('../partials/foot') %>

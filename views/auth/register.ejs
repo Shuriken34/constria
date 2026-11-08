@@ -1,0 +1,89 @@
+<%- include('../partials/head') %>
+<% function inv(n) { return errors[n] ? 'aria-invalid="true" aria-describedby="' + n + '-err"' : ''; } %>
+<div class="auth-wrap">
+  <div class="auth-art">
+    <img src="<%= images.workers %>" alt="" width="1600" height="1000">
+    <div>
+      <p class="eyebrow">Gratuit, fără comisioane</p>
+      <p class="display display-l" style="margin-top:14px">Hai în<br>comunitate</p>
+      <p style="margin-top:14px;max-width:38ch">Publici anunțuri nelimitate, primești mesaje de la cumpărători și salvezi ofertele care te interesează.</p>
+    </div>
+  </div>
+  <div class="auth-form">
+    <div>
+      <h1 class="display display-m">Creează cont</h1>
+      <p class="muted" style="margin-bottom:24px">Ai deja cont? <a href="/autentificare"><strong>Intră în cont</strong></a></p>
+      <%- include('../partials/error-summary') %>
+      <form class="stack" method="post" action="/inregistrare" novalidate data-loading>
+        <input type="hidden" name="_csrf" value="<%= csrf %>">
+        <input type="hidden" name="next" value="<%= next %>">
+        <fieldset>
+          <legend>Tip de cont</legend>
+          <div class="choice-row">
+            <label class="choice"><input type="radio" name="account_type" value="persoana" data-account-type <%= form.account_type !== 'firma' ? 'checked' : '' %>><span><i data-lucide="user"></i> Persoană fizică</span></label>
+            <label class="choice"><input type="radio" name="account_type" value="firma" data-account-type <%= form.account_type === 'firma' ? 'checked' : '' %>><span><i data-lucide="building-2"></i> Firmă</span></label>
+          </div>
+        </fieldset>
+        <div class="form-grid" data-company-fields <%= form.account_type === 'firma' ? '' : 'hidden' %>>
+          <div class="field">
+            <label for="f-company_name">Denumire firmă <span class="req" aria-hidden="true">*</span></label>
+            <input class="input" id="f-company_name" name="company_name" autocomplete="organization" value="<%= form.company_name || '' %>" <%- inv('company_name') %>>
+            <%- include('../partials/field-error', { name: 'company_name' }) %>
+          </div>
+          <div class="field">
+            <label for="f-cui">CUI <span class="req" aria-hidden="true">*</span></label>
+            <input class="input" id="f-cui" name="cui" placeholder="RO12345678" value="<%= form.cui || '' %>" <%- inv('cui') %>>
+            <%- include('../partials/field-error', { name: 'cui' }) %>
+          </div>
+        </div>
+        <div class="field">
+          <label for="f-name">Nume și prenume <span class="req" aria-hidden="true">*</span></label>
+          <input class="input" id="f-name" name="name" autocomplete="name" required value="<%= form.name || '' %>" <%- inv('name') %>>
+          <%- include('../partials/field-error', { name: 'name' }) %>
+        </div>
+        <div class="form-grid">
+          <div class="field">
+            <label for="f-email">Email <span class="req" aria-hidden="true">*</span></label>
+            <input class="input" id="f-email" name="email" type="email" autocomplete="email" required value="<%= form.email || '' %>" <%- inv('email') %>>
+            <%- include('../partials/field-error', { name: 'email' }) %>
+          </div>
+          <div class="field">
+            <label for="f-phone">Telefon <span class="req" aria-hidden="true">*</span></label>
+            <input class="input" id="f-phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" placeholder="07xx xxx xxx" required value="<%= form.phone || '' %>" <%- inv('phone') %>>
+            <%- include('../partials/field-error', { name: 'phone' }) %>
+          </div>
+          <div class="field">
+            <label for="f-county">Județ <span class="req" aria-hidden="true">*</span></label>
+            <select class="select" id="f-county" name="county" required <%- inv('county') %>><option value="">Alege județul</option><% counties.forEach(function (c) { %><option <%= form.county === c ? 'selected' : '' %>><%= c %></option><% }) %></select>
+            <%- include('../partials/field-error', { name: 'county' }) %>
+          </div>
+          <div class="field">
+            <label for="f-city">Localitate <span class="req" aria-hidden="true">*</span></label>
+            <input class="input" id="f-city" name="city" autocomplete="address-level2" required value="<%= form.city || '' %>" <%- inv('city') %>>
+            <%- include('../partials/field-error', { name: 'city' }) %>
+          </div>
+          <div class="field">
+            <label for="f-password">Parolă <span class="req" aria-hidden="true">*</span></label>
+            <div class="pw-wrap">
+              <input class="input" id="f-password" name="password" type="password" autocomplete="new-password" minlength="8" required <%- inv('password') %> aria-describedby="pw-help<%= errors.password ? ' password-err' : '' %>">
+              <button class="pw-toggle" type="button" data-pw-toggle="f-password" aria-label="Arată parola" aria-pressed="false"><i data-lucide="eye"></i></button>
+            </div>
+            <p class="help" id="pw-help">Minimum 8 caractere.</p>
+            <%- include('../partials/field-error', { name: 'password' }) %>
+          </div>
+          <div class="field">
+            <label for="f-password2">Confirmă parola <span class="req" aria-hidden="true">*</span></label>
+            <input class="input" id="f-password2" name="password2" type="password" autocomplete="new-password" required <%- inv('password2') %>>
+            <%- include('../partials/field-error', { name: 'password2' }) %>
+          </div>
+        </div>
+        <div class="field">
+          <label class="check"><input type="checkbox" id="f-terms" name="terms" value="1" <%= form.terms ? 'checked' : '' %> <%- inv('terms') %>> <span>Am citit și accept <a href="/termeni" target="_blank">Termenii și condițiile</a> și <a href="/confidentialitate" target="_blank">Politica de confidențialitate</a>.</span></label>
+          <%- include('../partials/field-error', { name: 'terms' }) %>
+        </div>
+        <button class="btn btn--red btn--lg btn--block" type="submit">Creează contul</button>
+      </form>
+    </div>
+  </div>
+</div>
+<%- include('../partials/foot') %>

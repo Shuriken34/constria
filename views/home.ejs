@@ -1,0 +1,378 @@
+<%- include('partials/head') %>
+
+<!-- HERO: videoclip pe tot ecranul în spatele titlului uriaș -->
+<section class="hero-v" data-hero-scene aria-labelledby="hero-title">
+  <div class="hero-media" data-depth="0.15" aria-hidden="true">
+    <% heroVideos.slice(0, 2).forEach(function (v, i) { %>
+      <video class="hero-video<%= i === 0 ? ' is-active' : '' %>" muted playsinline preload="<%= i === 0 ? 'auto' : 'none' %>" <%- i === 0 ? 'poster="' + images.heroPoster + '" src="' + v.src + '"' : '' %> tabindex="-1"></video>
+    <% }) %>
+    <div class="hero-shade"></div>
+  </div>
+  <script type="application/json" id="hero-videos"><%- JSON.stringify(heroVideos) %></script>
+
+  <div class="hero-controls">
+    <p class="video-caption"><span data-video-caption><%= heroVideos[0].label %></span></p>
+    <button class="video-toggle" type="button" data-video-toggle aria-pressed="false" aria-label="Oprește videoclipul"><i data-lucide="pause"></i></button>
+  </div>
+
+  <div class="container hero-content">
+    <p class="eyebrow">Materiale · Utilaje · Scule</p>
+    <h1 id="hero-title" class="hero-type display display-xxl">
+      <span class="hero-line" data-hero-line="-1">Construiește</span>
+      <span class="hero-line hero-line--right" data-hero-line="1">pe <span class="accent">cinste</span></span>
+    </h1>
+    <div class="hero-sub">
+      <p class="lead"><strong>Materiale, utilaje și scule de construcții de la oameni reali.</strong> Cumpără surplus de pe șantier, închiriază un utilaj sau o sculă și vorbește direct cu vânzătorul. Fără intermediari, fără comisioane.</p>
+      <div class="hero-actions">
+        <% groups.forEach(function (g) { %><a class="btn btn--light" href="<%= g.path %>"><i data-lucide="<%= g.id === 'utilaje' ? 'tractor' : g.id === 'scule' ? 'drill' : 'brick-wall' %>"></i> <%= g.short %></a><% }) %>
+        <a class="btn btn--red" href="/adauga-anunt"><i data-lucide="plus"></i> Vinde sau închiriază</a>
+      </div>
+    </div>
+    <form class="hero-search" action="/anunturi" method="get" role="search" aria-label="Caută anunțuri">
+      <label class="field-inline"><i data-lucide="search"></i><span class="sr-only">Ce cauți</span><input name="q" type="search" placeholder="Ce cauți? ex: BCA 25, miniexcavator, flex" enterkeyhint="search"></label>
+      <label class="field-inline"><i data-lucide="layers"></i><span class="sr-only">Secțiune</span>
+        <select name="grup"><option value="">Toate secțiunile</option><% groups.forEach(function (g) { %><option value="<%= g.id %>"><%= g.name %></option><% }) %></select>
+      </label>
+      <label class="field-inline"><i data-lucide="map-pin"></i><span class="sr-only">Județ</span>
+        <select name="judet"><option value="">Toată țara</option><% counties.forEach(function (c) { %><option><%= c %></option><% }) %></select>
+      </label>
+      <button class="btn btn--lg" type="submit">Caută</button>
+    </form>
+  </div>
+</section>
+
+<div class="marquee" aria-hidden="true">
+  <div class="marquee-track">
+    <% for (var k = 0; k < 2; k++) { %>
+      <span>0% comision</span><span>Materiale</span><span>Utilaje de închiriat</span><span>Scule și unelte</span><span>Surplus de șantier</span><span>Direct de la vânzător</span><span>Toate cele 42 de județe</span>
+    <% } %>
+  </div>
+</div>
+
+<!-- CATEGORII -->
+<section class="section" id="categorii" aria-labelledby="cat-title">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <p class="eyebrow">Materiale de construcții</p>
+        <h2 id="cat-title" class="display display-l" style="margin-top:14px">Tot ce-ți trebuie, de la fundație la acoperiș</h2>
+      </div>
+      <a class="link-arrow" href="/materiale">Toate materialele <i data-lucide="arrow-right"></i></a>
+    </div>
+    <div class="cat-grid">
+      <% catsByGroup('materiale').slice(0, 10).forEach(function (c, i) { %>
+        <a class="cat-tile reveal<%= i === 0 || i === 6 ? ' cat-tile--wide' : '' %>" href="/categorie/<%= c.slug %>">
+          <img src="<%= c.image %>" alt="" loading="lazy" width="800" height="600">
+          <div class="cat-tile-body">
+            <div><h3><%= c.short %></h3><small><%= plural(counts[c.slug] || 0, 'anunț', 'anunțuri') %></small></div>
+            <span class="round" aria-hidden="true"><i data-lucide="arrow-up-right"></i></span>
+          </div>
+        </a>
+      <% }) %>
+    </div>
+  </div>
+</section>
+
+<!-- UTILAJE ȘI ECHIPAMENTE -->
+<section class="machines on-darker" aria-labelledby="mach-title">
+  <div class="machines-hero">
+    <img src="<%= images.machines %>" alt="Excavator Caterpillar galben săpând pe un șantier" loading="lazy" data-parallax width="2000" height="1300">
+    <div class="container machines-hero-text">
+      <p class="eyebrow">Utilaje și echipamente</p>
+      <h2 id="mach-title" class="display display-xl">Utilaje grele.<br><span class="accent">Prețuri ușoare.</span></h2>
+      <p class="lead">Excavatoare, buldoexcavatoare, nacele, basculante, betoniere, generatoare și schele. De vânzare sau de închiriat pe oră, zi sau lună, cu sau fără operator.</p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:26px">
+        <a class="btn btn--red btn--lg" href="/utilaje?tip=inchiriere"><i data-lucide="calendar-clock"></i> Închiriază un utilaj</a>
+        <a class="btn btn--light btn--lg" href="/utilaje?tip=vanzare"><i data-lucide="tag"></i> Utilaje de vânzare</a>
+      </div>
+    </div>
+  </div>
+  <div class="container" style="padding-block:clamp(48px,7vw,96px)">
+    <div class="machine-cats">
+      <% catsByGroup('utilaje').forEach(function (c) { %>
+        <a class="machine-cat reveal" href="/categorie/<%= c.slug %>">
+          <img src="<%= c.image.replace('w=800','w=400') %>" alt="" loading="lazy" width="400" height="300">
+          <span><strong><%= c.short %></strong><small><%= plural(counts[c.slug] || 0, 'anunț', 'anunțuri') %></small></span>
+        </a>
+      <% }) %>
+    </div>
+    <% if (machines.length) { %>
+      <div class="section-head" style="margin:clamp(48px,6vw,80px) 0 28px">
+        <h3 class="display display-m">Utilaje recomandate</h3>
+        <a class="link-arrow" href="/utilaje">Toate utilajele <i data-lucide="arrow-right"></i></a>
+      </div>
+      <div class="grid-cards">
+        <% machines.forEach(function (l) { %><%- include('partials/card', { l: l }) %><% }) %>
+      </div>
+    <% } %>
+    <div class="machine-owner">
+      <div>
+        <h3 class="display display-s">Ai un utilaj care stă degeaba?</h3>
+        <p>Închiriază-l altor constructori și transformă zilele de pauză în venit. Publicarea e gratuită.</p>
+      </div>
+      <a class="btn btn--light" href="/adauga-anunt?categorie=excavatoare&tip=inchiriere"><i data-lucide="plus"></i> Publică un utilaj</a>
+    </div>
+  </div>
+</section>
+
+<!-- SCULE ȘI UNELTE -->
+<section class="section on-cream tools" aria-labelledby="tools-title">
+  <div class="container">
+    <div class="tools-top">
+      <figure class="tools-media reveal">
+        <img src="<%= images.tools %>" alt="Muncitor cu mască de sudură folosind un polizor unghiular, cu scântei" loading="lazy" data-parallax-small width="1600" height="2000">
+        <figcaption class="tag tag--red">Scule de închiriat de la 40 lei / zi</figcaption>
+      </figure>
+      <div>
+        <p class="eyebrow">Scule și unelte</p>
+        <h2 id="tools-title" class="display display-l" style="margin:16px 0 20px">Scula potrivită pentru <span class="accent">fiecare</span> meserie</h2>
+        <p class="lead">Rotopercutoare, flexuri, scule cu acumulator, nivele laser, scule manuale și echipamente de protecție. Cumpără noi sau second-hand ori închiriază pentru o zi, exact când ai nevoie.</p>
+        <div class="tool-cats">
+          <% catsByGroup('scule').forEach(function (c) { %>
+            <a class="tool-cat" href="/categorie/<%= c.slug %>"><i data-lucide="<%= c.icon %>"></i><span><%= c.short %></span><small><%= counts[c.slug] || 0 %></small></a>
+          <% }) %>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:24px">
+          <a class="btn" href="/scule"><i data-lucide="drill"></i> Toate sculele</a>
+          <a class="btn btn--ghost" href="/scule?tip=inchiriere"><i data-lucide="calendar-clock"></i> Scule de închiriat</a>
+        </div>
+      </div>
+    </div>
+    <% if (tools.length) { %>
+      <div class="section-head" style="margin:clamp(48px,6vw,80px) 0 28px">
+        <h3 class="display display-m">Scule recomandate</h3>
+        <a class="link-arrow" href="/scule">Vezi toate <i data-lucide="arrow-right"></i></a>
+      </div>
+      <div class="grid-cards">
+        <% tools.forEach(function (l) { %><%- include('partials/card', { l: l }) %><% }) %>
+      </div>
+    <% } %>
+  </div>
+</section>
+
+<!-- MANIFEST -->
+<section class="section on-dark manifesto" aria-labelledby="manifest-title">
+  <div class="container">
+    <p class="eyebrow">De ce Constria</p>
+    <h2 id="manifest-title" class="sr-only">Manifestul nostru</h2>
+    <p class="fill-text" data-fill>Nimic nu se pierde pe un șantier. Ce-ți prisosește ție, altuia îi lipsește. Noi doar vă punem față în față, cinstit, fără comisioane.</p>
+    <p style="margin-top:40px"><a class="link-arrow" href="/despre-noi">Povestea noastră <i data-lucide="arrow-right"></i></a></p>
+  </div>
+</section>
+
+<!-- IMAGINE MARE -->
+<section class="fullbleed on-dark" aria-labelledby="trail-title">
+  <img src="<%= images.wide %>" alt="Clădire din beton în construcție" loading="lazy" data-parallax width="2000" height="1300">
+  <div class="container fullbleed-text">
+    <p class="eyebrow">Construim împreună</p>
+    <h2 id="trail-title" class="display display-xl">De la vecin<br>la vecin</h2>
+    <p class="lead" style="margin-inline:auto">Surplusul de pe un șantier devine începutul altuia. Local, rapid și la un preț corect.</p>
+  </div>
+</section>
+
+<!-- BENEFICII NUMEROTATE -->
+<section class="section" aria-label="Avantaje">
+  <div class="container features">
+    <article class="feature">
+      <div class="feature-media reveal"><img src="<%= images.f1 %>" alt="Constructor cu vestă reflectorizantă pe șantier" loading="lazy" data-parallax-small width="1200" height="1500"></div>
+      <div class="reveal">
+        <span class="feature-num" aria-hidden="true">01</span>
+        <p class="eyebrow">Direct de la sursă</p>
+        <h3 class="display display-m">Vorbești cu omul,<br>nu cu un call-center</h3>
+        <p>Fiecare anunț are în spate un vânzător real: o firmă de construcții, un depozit sau un vecin care a terminat casa. Suni, scrii pe WhatsApp sau trimiți mesaj direct din platformă.</p>
+      </div>
+    </article>
+    <article class="feature">
+      <div class="feature-media reveal"><img src="<%= images.f2 %>" alt="Bare de fier beton legate în pachete" loading="lazy" data-parallax-small width="1200" height="1500"></div>
+      <div class="reveal">
+        <span class="feature-num" aria-hidden="true">02</span>
+        <p class="eyebrow">Surplus la preț cinstit</p>
+        <h3 class="display display-m">Până la 60% mai ieftin decât în magazin</h3>
+        <p>Paleți începuți, saci rămași, plăci din același lot. Materiale noi, care altfel ar sta degeaba în curte. Tu economisești, vânzătorul recuperează banii.</p>
+      </div>
+    </article>
+    <article class="feature">
+      <div class="feature-media reveal"><img src="<%= images.f3 %>" alt="Depozit mare cu rafturi de materiale" loading="lazy" data-parallax-small width="1200" height="1500"></div>
+      <div class="reveal">
+        <span class="feature-num" aria-hidden="true">03</span>
+        <p class="eyebrow">Local, din județul tău</p>
+        <h3 class="display display-m">Ridici de aproape,<br>transportul îl stabilești tu</h3>
+        <p>Filtrează după județ și localitate. Fiecare vânzător își spune clar dacă livrează sau dacă marfa se ridică de la el, iar costul transportului îl stabiliți direct.</p>
+      </div>
+    </article>
+  </div>
+</section>
+
+<!-- ANUNȚURI RECOMANDATE -->
+<section class="section on-cream" aria-labelledby="feat-title">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <p class="eyebrow">Proaspăt publicate</p>
+        <h2 id="feat-title" class="display display-l" style="margin-top:14px">Materiale recomandate</h2>
+      </div>
+      <a class="link-arrow" href="/materiale">Vezi toate materialele <i data-lucide="arrow-right"></i></a>
+    </div>
+    <% if (featured.length) { %>
+      <div class="grid-cards">
+        <% featured.forEach(function (l) { %><%- include('partials/card', { l: l }) %><% }) %>
+      </div>
+    <% } else { %>
+      <div class="empty"><h3>Încă nu sunt anunțuri</h3><p>Fii primul care publică un anunț pe Constria.</p><a class="btn btn--red" href="/adauga-anunt">Adaugă anunț</a></div>
+    <% } %>
+  </div>
+</section>
+
+<!-- STATISTICI -->
+<section class="section section--tight on-darker" aria-label="Constria în cifre">
+  <div class="container">
+    <div class="stats">
+      <div class="stat"><strong class="tnum" data-count="<%= stats.listings %>"><%= formatNumber(stats.listings) %></strong><span>Anunțuri active</span></div>
+      <div class="stat"><strong class="tnum" data-count="<%= stats.users %>"><%= formatNumber(stats.users) %></strong><span>Membri</span></div>
+      <div class="stat"><strong class="tnum">42</strong><span>Județe acoperite</span></div>
+      <div class="stat"><strong class="tnum">0%</strong><span>Comision la vânzare</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- CUM FUNCȚIONEAZĂ -->
+<section class="section on-dark" aria-labelledby="how-title">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <p class="eyebrow">Simplu, în trei pași</p>
+        <h2 id="how-title" class="display display-l" style="margin-top:14px">Cum funcționează</h2>
+      </div>
+      <div class="tabs" role="tablist" aria-label="Alege rolul">
+        <button type="button" role="tab" id="tab-buy" aria-controls="panel-buy" aria-selected="true">Cumpăr</button>
+        <button type="button" role="tab" id="tab-sell" aria-controls="panel-sell" aria-selected="false" tabindex="-1">Vând</button>
+      </div>
+    </div>
+    <div role="tabpanel" id="panel-buy" aria-labelledby="tab-buy">
+      <div class="steps">
+        <div class="step"><h3>Caută</h3><p>Scrie ce materiale îți trebuie și filtrează după județ, preț sau starea produsului.</p></div>
+        <div class="step"><h3>Contactează</h3><p>Sună vânzătorul, scrie-i pe WhatsApp sau trimite un mesaj direct din pagina anunțului.</p></div>
+        <div class="step"><h3>Ridică</h3><p>Stabiliți împreună prețul final și transportul. Verifici marfa și plătești la predare.</p></div>
+      </div>
+    </div>
+    <div role="tabpanel" id="panel-sell" aria-labelledby="tab-sell" hidden>
+      <div class="steps">
+        <div class="step"><h3>Fotografiază</h3><p>Fă câteva poze clare materialelor: paletul întreg, eticheta, starea ambalajului.</p></div>
+        <div class="step"><h3>Publică</h3><p>Completează titlul, prețul și cantitatea. Anunțul apare imediat, gratuit.</p></div>
+        <div class="step"><h3>Vinde</h3><p>Primești telefoane și mesaje. Când ai vândut, marchezi anunțul ca vândut.</p></div>
+      </div>
+    </div>
+    <p style="margin-top:36px"><a class="btn btn--light" href="/cum-functioneaza">Află mai multe <i data-lucide="arrow-right"></i></a></p>
+  </div>
+</section>
+
+<!-- VÂNZĂTORI -->
+<% if (sellers.length) { %>
+<section class="section on-darker" aria-labelledby="sellers-title">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <p class="eyebrow">Comunitatea noastră</p>
+        <h2 id="sellers-title" class="display display-l" style="margin-top:14px">Vânzători de încredere</h2>
+      </div>
+      <a class="link-arrow" href="/inregistrare?tip=firma">Vinde ca firmă <i data-lucide="arrow-right"></i></a>
+    </div>
+    <div class="sellers">
+      <% sellers.forEach(function (s) { %>
+        <a class="seller-card reveal" href="/vanzator/<%= s.id %>">
+          <span class="avatar avatar--lg"><% if (s.avatar) { %><img src="<%= imgSrc(s.avatar) %>" alt=""><% } else { %><%= initials(s.company_name || s.name) %><% } %></span>
+          <strong><%= s.company_name || s.name %></strong>
+          <% if (s.verified) { %><span class="verified"><i data-lucide="badge-check"></i> Verificat</span><% } %>
+          <%- include('partials/stars', { rating: s.rating }) %>
+          <small><%= s.city %>, <%= s.county %> · <%= plural(s.active, 'anunț', 'anunțuri') %></small>
+        </a>
+      <% }) %>
+    </div>
+  </div>
+</section>
+<% } %>
+
+<!-- CALCULATOR -->
+<section class="section" aria-labelledby="calc-title">
+  <div class="container calc-teaser">
+    <figure class="reveal"><img src="<%= images.calcA %>" alt="Inginer care verifică planurile pe șantier" loading="lazy" width="900" height="1200"></figure>
+    <div>
+      <p class="eyebrow">Te ajutăm să calculezi</p>
+      <h2 id="calc-title" class="display display-l">Câte materiale îți trebuie?</h2>
+      <p>Răspunde la 4 întrebări simple și află cantitatea estimată de BCA, ciment, adeziv sau vopsea pentru lucrarea ta.</p>
+      <a class="btn btn--red btn--lg" href="/calculator"><i data-lucide="calculator"></i> Pornește calculatorul</a>
+    </div>
+    <figure class="reveal"><img src="<%= images.calcB %>" alt="Bormașină, ciocan și ruletă pe masa de lucru" loading="lazy" width="900" height="1200"></figure>
+  </div>
+</section>
+
+<!-- TESTIMONIALE -->
+<section class="section on-cream" aria-labelledby="quotes-title">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <p class="eyebrow">Ce spun membrii</p>
+        <h2 id="quotes-title" class="display display-l" style="margin-top:14px">Povești din șantier</h2>
+      </div>
+    </div>
+    <div class="quotes">
+      <% testimonials.forEach(function (t) { %>
+        <figure class="quote reveal">
+          <blockquote><%= t.text %></blockquote>
+          <figcaption><span class="avatar avatar--sm"><%= initials(t.name) %></span><span><strong><%= t.name %></strong><span class="muted"><%= t.role %></span></span></figcaption>
+        </figure>
+      <% }) %>
+    </div>
+  </div>
+</section>
+
+<!-- BLOG -->
+<% if (posts.length) { %>
+<section class="section" aria-labelledby="blog-title">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <p class="eyebrow">Ghiduri practice</p>
+        <h2 id="blog-title" class="display display-l" style="margin-top:14px">Învață de la meseriași</h2>
+      </div>
+      <a class="link-arrow" href="/blog">Toate ghidurile <i data-lucide="arrow-right"></i></a>
+    </div>
+    <div class="posts">
+      <% posts.forEach(function (p) { %>
+        <a class="post-card reveal" href="/blog/<%= p.slug %>">
+          <figure><img src="<%= p.image %>" alt="" loading="lazy" width="800" height="550"></figure>
+          <span class="tag tag--plum" style="align-self:flex-start"><%= p.tag %></span>
+          <h3><%= p.title %></h3>
+          <p><%= p.excerpt %></p>
+        </a>
+      <% }) %>
+    </div>
+  </div>
+</section>
+<% } %>
+
+<!-- FAQ -->
+<section class="section on-cream" aria-labelledby="faq-title">
+  <div class="container container--narrow">
+    <p class="eyebrow">Întrebări frecvente</p>
+    <h2 id="faq-title" class="display display-l" style="margin:14px 0 36px">Ai întrebări?</h2>
+    <div class="faq">
+      <% faq.forEach(function (f) { %>
+        <details><summary><%= f.q %><span class="plus" aria-hidden="true"><i data-lucide="plus"></i></span></summary><div><p><%= f.a %></p></div></details>
+      <% }) %>
+    </div>
+    <p style="margin-top:28px"><a class="link-arrow" href="/intrebari-frecvente">Toate întrebările <i data-lucide="arrow-right"></i></a></p>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="section on-dark cta-band" aria-labelledby="cta-title">
+  <div class="container">
+    <p class="eyebrow">Ai materiale rămase?</p>
+    <h2 id="cta-title" class="display display-xl" style="margin-top:18px">Transformă-le<br>în <span class="accent">bani</span></h2>
+    <p class="lead">Publicarea durează sub două minute și este complet gratuită. Fără comisioane, fără abonamente.</p>
+    <a class="btn btn--red btn--lg" href="/adauga-anunt"><i data-lucide="plus"></i> Adaugă anunț gratuit</a>
+  </div>
+</section>
+
+<%- include('partials/foot') %>

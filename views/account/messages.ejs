@@ -1,0 +1,55 @@
+<%- include('../partials/head') %>
+<div class="container account">
+  <%- include('../partials/account-nav') %>
+  <div>
+    <div class="account-head"><h1 class="display display-l">Mesaje</h1></div>
+    <% if (!convs.length) { %>
+      <div class="empty"><i data-lucide="messages-square" class="big"></i><h2>Nicio conversație</h2><p>Când îi scrii unui vânzător sau primești un mesaj la anunțurile tale, conversația apare aici.</p><a class="btn" href="/anunturi">Caută materiale</a></div>
+    <% } else { %>
+    <div class="inbox<%= active ? ' has-active' : '' %>">
+      <div class="inbox-list" role="list">
+        <% convs.forEach(function (c) { %>
+          <a role="listitem" class="conv<%= c.unread ? ' is-unread' : '' %>" href="/cont/mesaje/<%= c.id %>" <%- active && active.id === c.id ? 'aria-current="page"' : '' %>>
+            <img src="<%= imgSrc(c.cover).replace('w=1200','w=150') %>" alt="">
+            <span style="min-width:0">
+              <strong><%= c.other_company || c.other_name %></strong>
+              <span class="t"><%= c.listing_title %></span>
+              <span class="t"><%= c.last_sender === user.id ? 'Tu: ' : '' %><%= c.last_body %></span>
+              <span class="when"><%= timeAgo(c.updated_at) %></span>
+            </span>
+            <% if (c.unread) { %><span class="badge-dot unread-dot" aria-label="<%= c.unread %> necitite"><%= c.unread %></span><% } %>
+          </a>
+        <% }) %>
+      </div>
+      <div class="thread">
+        <% if (active) { var iAmBuyer = active.buyer_id === user.id; var otherName = iAmBuyer ? (active.seller_company || active.seller_name) : active.buyer_name; %>
+          <div class="thread-head">
+            <a class="icon-btn only-mobile" href="/cont/mesaje" aria-label="Înapoi la conversații"><i data-lucide="arrow-left"></i></a>
+            <img src="<%= imgSrc(active.cover).replace('w=1200','w=150') %>" alt="">
+            <div class="grow">
+              <strong><%= otherName %></strong>
+              <a href="<%= listingUrl({ id: active.lid, slug: active.listing_slug }) %>" class="muted" style="font-size:.88rem;font-weight:600"><%= active.listing_title %> · <%= formatPrice(active) %></a>
+              <% if (active.listing_status !== 'activ') { %><span class="tag" style="margin-left:6px"><%= active.listing_status === 'vandut' ? 'Vândut' : 'Inactiv' %></span><% } %>
+            </div>
+            <% if (iAmBuyer) { %><a class="btn btn--ghost btn--sm only-desktop" href="/vanzator/<%= active.seller_id %>#recenzii"><i data-lucide="star"></i> Recenzie</a><% } %>
+          </div>
+          <div class="thread-body" data-thread data-conv="<%= active.id %>" data-me="<%= user.id %>" data-last="<%= msgs.length ? msgs[msgs.length - 1].id : 0 %>" aria-live="polite">
+            <% var lastDay = ''; msgs.forEach(function (msg, i) { var d = formatDate(msg.created_at); if (d !== lastDay) { lastDay = d; %><div class="day-sep"><%= d %></div><% } %>
+              <div class="msg <%= msg.sender_id === user.id ? 'msg--out' : 'msg--in' %>" <%- i === msgs.length - 1 ? 'id="ultimul"' : '' %>><%= msg.body %><time><%= formatTime(msg.created_at) %></time></div>
+            <% }) %>
+          </div>
+          <form class="composer" method="post" action="/cont/mesaje/<%= active.id %>" data-composer>
+            <input type="hidden" name="_csrf" value="<%= csrf %>">
+            <label for="composer-body" class="sr-only">Scrie un mesaj</label>
+            <textarea class="textarea" id="composer-body" name="body" rows="1" placeholder="Scrie un mesaj…" required maxlength="2000"></textarea>
+            <button class="btn" type="submit" aria-label="Trimite"><i data-lucide="send"></i><span class="only-desktop">Trimite</span></button>
+          </form>
+        <% } else { %>
+          <div class="inbox-empty"><div><i data-lucide="message-circle" style="width:48px;height:48px;margin:0 auto 12px"></i><p>Alege o conversație din stânga.</p></div></div>
+        <% } %>
+      </div>
+    </div>
+    <% } %>
+  </div>
+</div>
+<%- include('../partials/foot') %>

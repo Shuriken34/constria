@@ -1,0 +1,42 @@
+<%- include('../partials/head') %>
+<div class="container account">
+  <%- include('../partials/account-nav') %>
+  <div>
+    <div class="account-head">
+      <div>
+        <p class="eyebrow">Contul meu</p>
+        <h1 class="display display-l" style="margin-top:10px">Salut, <%= user.name.split(' ')[0] %>!</h1>
+      </div>
+      <a class="btn btn--red" href="/adauga-anunt"><i data-lucide="plus"></i> Adaugă anunț</a>
+    </div>
+    <div class="kpis">
+      <a class="kpi" href="/cont/anunturi"><strong class="tnum"><%= counts.activ || 0 %></strong><span>Anunțuri active</span></a>
+      <a class="kpi" href="/cont/anunturi?status=vandut"><strong class="tnum"><%= counts.vandut || 0 %></strong><span>Vândute</span></a>
+      <div class="kpi"><strong class="tnum"><%= formatNumber(views) %></strong><span>Vizualizări totale</span></div>
+      <a class="kpi" href="/cont/mesaje"><strong class="tnum"><%= unread %></strong><span>Mesaje necitite</span></a>
+    </div>
+
+    <div class="section-head" style="margin-bottom:16px"><h2 class="display display-s">Anunțuri recente</h2><a class="link-arrow" href="/cont/anunturi">Toate <i data-lucide="arrow-right"></i></a></div>
+    <% if (listings.length) { %>
+      <div class="list"><% listings.forEach(function (l) { %><%- include('../partials/my-listing-row', { l: l }) %><% }) %></div>
+    <% } else { %>
+      <div class="empty"><i data-lucide="package-open" class="big"></i><h3>Niciun anunț încă</h3><p>Ai materiale rămase de la o lucrare? Publică primul tău anunț în două minute.</p><a class="btn btn--red" href="/adauga-anunt">Adaugă primul anunț</a></div>
+    <% } %>
+
+    <div class="section-head" style="margin:40px 0 16px"><h2 class="display display-s">Conversații recente</h2><a class="link-arrow" href="/cont/mesaje">Toate <i data-lucide="arrow-right"></i></a></div>
+    <% if (convs.length) { %>
+      <div class="list">
+        <% convs.forEach(function (c) { %>
+          <a class="row-item" href="/cont/mesaje/<%= c.id %>" style="text-decoration:none;grid-template-columns:72px 1fr auto">
+            <img src="<%= imgSrc(c.cover).replace('w=1200','w=200') %>" alt="" style="width:72px;height:60px">
+            <div style="min-width:0"><h3><%= c.other_company || c.other_name %> · <span class="muted" style="font-weight:600"><%= truncate(c.listing_title, 50) %></span></h3><div class="sub"><span><%= truncate(c.last_body || '', 80) %></span></div></div>
+            <% if (c.unread) { %><span class="tag tag--red"><%= c.unread %> noi</span><% } else { %><span class="muted" style="font-size:.8rem"><%= timeAgo(c.updated_at) %></span><% } %>
+          </a>
+        <% }) %>
+      </div>
+    <% } else { %>
+      <p class="muted">Nu ai încă nicio conversație. Când trimiți sau primești un mesaj, îl găsești aici.</p>
+    <% } %>
+  </div>
+</div>
+<%- include('../partials/foot') %>

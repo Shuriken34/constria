@@ -1,0 +1,16 @@
+<%- include('partials/head') %>
+<section class="page-hero">
+  <div class="container container--narrow">
+    <nav aria-label="Breadcrumb"><ol class="breadcrumbs"><li><a href="/">Acasă</a></li><li aria-current="page">Întrebări frecvente</li></ol></nav>
+    <h1 class="display display-xl">Întrebări frecvente</h1>
+  </div>
+</section>
+<section class="container container--narrow" style="padding-bottom:96px">
+  <div class="faq">
+    <% faq.forEach(function (f, i) { %>
+      <details <%= i === 0 ? 'open' : '' %>><summary><%= f.q %><span class="plus" aria-hidden="true"><i data-lucide="plus"></i></span></summary><div><p><%= f.a %></p></div></details>
+    <% }) %>
+  </div>
+  <div class="notice" style="margin-top:36px"><i data-lucide="help-circle"></i><p>Nu ai găsit răspunsul? <a href="/contact"><strong>Scrie-ne</strong></a> și îți răspundem în maximum o zi lucrătoare.</p></div>
+</section>
+<%- include('partials/foot') %>

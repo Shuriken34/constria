@@ -1,0 +1,49 @@
+<%- include('../partials/head') %>
+<section class="container" style="padding-block:40px 96px">
+  <p class="eyebrow">Administrare</p>
+  <h1 class="display display-l" style="margin-top:10px">Panou de control</h1>
+  <%- include('nav') %>
+  <div class="kpis">
+    <div class="kpi"><strong class="tnum"><%= stats.users %></strong><span>Utilizatori</span></div>
+    <div class="kpi"><strong class="tnum"><%= stats.listings %></strong><span>Anunțuri active</span></div>
+    <div class="kpi"><strong class="tnum"><%= stats.today %></strong><span>Anunțuri noi (24h)</span></div>
+    <div class="kpi"><strong class="tnum"><%= stats.messages %></strong><span>Mesaje schimbate</span></div>
+  </div>
+
+  <h2 class="display display-s" style="margin:32px 0 14px">Raportări deschise (<%= stats.reports %>)</h2>
+  <% if (reports.length) { %>
+    <div class="table-wrap"><table class="table">
+      <thead><tr><th>Anunț</th><th>Motiv</th><th>Detalii</th><th>Raportat de</th><th>Când</th><th>Acțiuni</th></tr></thead>
+      <tbody>
+        <% reports.forEach(function (r) { %>
+          <tr>
+            <td><a href="<%= listingUrl({ id: r.listing_id, slug: r.slug }) %>"><%= truncate(r.title, 40) %></a><% if (r.listing_status === 'blocat') { %> <span class="tag tag--red">blocat</span><% } %></td>
+            <td><%= r.reason %></td>
+            <td><%= truncate(r.details || '–', 60) %></td>
+            <td><%= r.reporter || 'Vizitator' %></td>
+            <td><%= timeAgo(r.created_at) %></td>
+            <td class="actions">
+              <form method="post" action="/admin/anunturi/<%= r.listing_id %>"><input type="hidden" name="_csrf" value="<%= csrf %>"><button class="btn btn--red btn--sm" name="action" value="blocheaza">Blochează</button></form>
+              <form method="post" action="/admin/rapoarte/<%= r.id %>"><input type="hidden" name="_csrf" value="<%= csrf %>"><button class="btn btn--ghost btn--sm">Rezolvat</button></form>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table></div>
+  <% } else { %><p class="muted">Nicio raportare deschisă.</p><% } %>
+
+  <h2 class="display display-s" style="margin:40px 0 14px">Mesaje de contact (<%= stats.contacts %>)</h2>
+  <% if (contacts.length) { %>
+    <div class="list">
+      <% contacts.forEach(function (c) { %>
+        <div class="form-card" style="padding:18px">
+          <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap"><strong><%= c.name %> · <a href="mailto:<%= c.email %>"><%= c.email %></a></strong><span class="muted"><%= timeAgo(c.created_at) %></span></div>
+          <% if (c.subject) { %><p style="font-weight:700;margin:6px 0 0"><%= c.subject %></p><% } %>
+          <p style="white-space:pre-line;margin-top:6px"><%= c.body %></p>
+          <form method="post" action="/admin/contact/<%= c.id %>" style="margin-top:10px"><input type="hidden" name="_csrf" value="<%= csrf %>"><button class="btn btn--ghost btn--sm">Marchează rezolvat</button></form>
+        </div>
+      <% }) %>
+    </div>
+  <% } else { %><p class="muted">Niciun mesaj nou.</p><% } %>
+</section>
+<%- include('../partials/foot') %>

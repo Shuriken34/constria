@@ -1,0 +1,44 @@
+<%- include('partials/head') %>
+<section class="page-hero">
+  <div class="container">
+    <nav aria-label="Breadcrumb"><ol class="breadcrumbs"><li><a href="/">Acasă</a></li><li aria-current="page">Contact</li></ol></nav>
+    <h1 class="display display-xxl">Contact</h1>
+  </div>
+</section>
+<section class="container" style="padding-bottom:96px">
+  <div class="split" style="align-items:start">
+    <div>
+      <p class="lead">Ai o întrebare, o problemă cu un anunț sau o idee pentru platformă? Scrie-ne și îți răspundem în maximum o zi lucrătoare.</p>
+      <div class="stack" style="margin-top:32px;gap:14px">
+        <div class="notice"><i data-lucide="mail"></i><p><strong>Email</strong><br>contact@constria.ro</p></div>
+        <div class="notice"><i data-lucide="clock"></i><p><strong>Program suport</strong><br>Luni – Vineri, 9:00 – 18:00</p></div>
+        <div class="notice"><i data-lucide="help-circle"></i><p>Verifică și <a href="/intrebari-frecvente"><strong>întrebările frecvente</strong></a> – poate găsești răspunsul imediat.</p></div>
+      </div>
+    </div>
+    <form class="form-card stack" method="post" action="/contact" novalidate data-loading>
+      <input type="hidden" name="_csrf" value="<%= csrf %>">
+      <%- include('partials/error-summary') %>
+      <div class="field">
+        <label for="f-name">Nume <span class="req" aria-hidden="true">*</span></label>
+        <input class="input" id="f-name" name="name" autocomplete="name" required value="<%= form.name || (user ? user.name : '') %>" <%- errors.name ? 'aria-invalid="true" aria-describedby="name-err"' : '' %>>
+        <%- include('partials/field-error', { name: 'name' }) %>
+      </div>
+      <div class="field">
+        <label for="f-email">Email <span class="req" aria-hidden="true">*</span></label>
+        <input class="input" id="f-email" name="email" type="email" autocomplete="email" required value="<%= form.email || (user ? user.email : '') %>" <%- errors.email ? 'aria-invalid="true" aria-describedby="email-err"' : '' %>>
+        <%- include('partials/field-error', { name: 'email' }) %>
+      </div>
+      <div class="field">
+        <label for="f-subject">Subiect</label>
+        <input class="input" id="f-subject" name="subject" value="<%= form.subject || '' %>">
+      </div>
+      <div class="field">
+        <label for="f-body">Mesaj <span class="req" aria-hidden="true">*</span></label>
+        <textarea class="textarea" id="f-body" name="body" required <%- errors.body ? 'aria-invalid="true" aria-describedby="body-err"' : '' %>><%= form.body || '' %></textarea>
+        <%- include('partials/field-error', { name: 'body' }) %>
+      </div>
+      <button class="btn btn--lg" type="submit"><i data-lucide="send"></i> Trimite mesajul</button>
+    </form>
+  </div>
+</section>
+<%- include('partials/foot') %>

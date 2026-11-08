@@ -1,0 +1,166 @@
+<%- include('partials/head') %>
+<%
+  var qp = { q: f.q, judet: f.county, oras: f.city, stare: f.condition, vanzator: f.seller_type, livrare: f.delivery, min: f.min, max: f.max, gratuit: f.free, sortare: f.sort, tip: f.type, an_min: f.year_min };
+  if (!cat && f.category) qp.categorie = f.category;
+  var groupPage = groups.some(function (g) { return g.path === baseUrl; });
+  if (!cat && !groupPage && f.group) qp.grup = f.group;
+  var stripCats = grp ? catsByGroup(grp.id) : categories;
+  var showMachine = !grp || rentableGroups.includes(grp.id);
+  var showYear = !grp || grp.id === 'utilaje';
+  var groupIcon = { materiale: 'brick-wall', utilaje: 'tractor', scule: 'drill' };
+  var qPlaceholder = { materiale: 'ex: BCA 30', utilaje: 'ex: buldoexcavator JCB', scule: 'ex: rotopercutor Bosch' };
+  function without(key) { var o = Object.assign({}, qp); delete o[key]; return buildQuery(baseUrl, o); }
+  function pageUrl(n) { return buildQuery(baseUrl, Object.assign({}, qp, { pagina: n > 1 ? n : '' })); }
+  var active = [];
+  if (f.q) active.push(['q', '„' + f.q + '”']);
+  if (f.county) active.push(['judet', f.county]);
+  if (f.city) active.push(['oras', f.city]);
+  if (f.condition) active.push(['stare', conditionMap[f.condition] ? conditionMap[f.condition].name : f.condition]);
+  if (f.seller_type) active.push(['vanzator', f.seller_type === 'firma' ? 'Firme' : 'Persoane fizice']);
+  if (f.delivery) active.push(['livrare', 'Cu livrare']);
+  if (f.min) active.push(['min', 'de la ' + f.min + ' lei']);
+  if (f.max) active.push(['max', 'până la ' + f.max + ' lei']);
+  if (f.free) active.push(['gratuit', 'Gratuit']);
+  if (f.type) active.push(['tip', f.type === 'inchiriere' ? 'De închiriat' : 'De vânzare']);
+  if (f.year_min) active.push(['an_min', 'din ' + f.year_min]);
+%>
+<section class="page-hero">
+  <div class="container">
+    <nav aria-label="Breadcrumb"><ol class="breadcrumbs"><li><a href="/">Acasă</a></li><li><a href="/anunturi">Anunțuri</a></li><% if (grp) { %><li><a href="<%= grp.path %>"><%= grp.short %></a></li><% } %><% if (cat) { %><li aria-current="page"><%= cat.name %></li><% } %></ol></nav>
+    <h1 class="display display-l"><%= title %></h1>
+    <div class="seg" role="navigation" aria-label="Secțiuni" style="margin:22px 0 0">
+      <a href="/anunturi" <%- !grp ? 'aria-current="page"' : '' %>>Toate</a>
+      <% groups.forEach(function (g) { %><a href="<%= g.path %>" <%- grp && grp.id === g.id ? 'aria-current="page"' : '' %>><i data-lucide="<%= groupIcon[g.id] %>"></i> <%= g.name %></a><% }) %>
+    </div>
+  </div>
+</section>
+
+<div class="container">
+  <div class="cat-strip" role="navigation" aria-label="Categorii" style="margin-bottom:24px">
+    <a class="chip<%= !cat && !f.category ? ' is-active' : '' %>" href="<%= buildQuery(grp ? grp.path : '/anunturi', Object.assign({}, qp, {})) %>">Toate</a>
+    <% stripCats.forEach(function (c) { %>
+      <a class="chip<%= (cat && cat.slug === c.slug) || f.category === c.slug ? ' is-active' : '' %>" href="<%= buildQuery('/categorie/' + c.slug, qp) %>"><%= c.short %> <small style="opacity:.7"><%= counts[c.slug] || 0 %></small></a>
+    <% }) %>
+  </div>
+
+  <div class="browse">
+    <form class="filters" id="filters" action="<%= baseUrl %>" method="get" aria-label="Filtre">
+      <div class="filters-head">
+        <h2>Filtre</h2>
+        <button class="icon-btn only-mobile" type="button" data-close-filters aria-label="Închide filtrele"><i data-lucide="x"></i></button>
+      </div>
+      <div class="field">
+        <label for="f-q">Cuvinte cheie</label>
+        <input class="input" id="f-q" name="q" type="search" value="<%= f.q %>" placeholder="<%= grp ? qPlaceholder[grp.id] : 'ex: BCA 30, miniexcavator, flex' %>">
+      </div>
+      <% if (!cat) { %>
+      <div class="field">
+        <label for="f-cat">Categorie</label>
+        <select class="select" id="f-cat" name="categorie"><option value="">Toate categoriile</option><% groups.forEach(function (g) { if (grp && grp.id !== g.id) return; %><optgroup label="<%= g.name %>"><% catsByGroup(g.id).forEach(function (c) { %><option value="<%= c.slug %>" <%= f.category === c.slug ? 'selected' : '' %>><%= c.name %></option><% }) %></optgroup><% }) %></select>
+      </div>
+      <% } %>
+      <% if (showMachine) { %>
+      <fieldset>
+        <legend>Tip anunț</legend>
+        <div class="choice-row">
+          <label class="choice"><input type="radio" name="tip" value="" <%= !f.type ? 'checked' : '' %>><span>Toate</span></label>
+          <label class="choice"><input type="radio" name="tip" value="vanzare" <%= f.type === 'vanzare' ? 'checked' : '' %>><span>Vânzare</span></label>
+          <label class="choice"><input type="radio" name="tip" value="inchiriere" <%= f.type === 'inchiriere' ? 'checked' : '' %>><span>Închiriere</span></label>
+        </div>
+      </fieldset>
+      <% } %>
+      <% if (showYear) { %>
+      <div class="field">
+        <label for="f-an">Utilaje fabricate din anul</label>
+        <input class="input" id="f-an" name="an_min" type="number" inputmode="numeric" min="1950" max="<%= year + 1 %>" placeholder="ex: 2015" value="<%= f.year_min %>">
+      </div>
+      <% } %>
+      <div class="field">
+        <label for="f-judet">Județ</label>
+        <select class="select" id="f-judet" name="judet"><option value="">Toată țara</option><% counties.forEach(function (c) { %><option <%= f.county === c ? 'selected' : '' %>><%= c %></option><% }) %></select>
+      </div>
+      <div class="field">
+        <label for="f-oras">Localitate</label>
+        <input class="input" id="f-oras" name="oras" value="<%= f.city %>" placeholder="ex: Florești">
+      </div>
+      <fieldset>
+        <legend>Preț (lei)</legend>
+        <div class="row2">
+          <label><span class="sr-only">Preț minim</span><input class="input" name="min" type="number" inputmode="numeric" min="0" placeholder="Minim" value="<%= f.min %>"></label>
+          <label><span class="sr-only">Preț maxim</span><input class="input" name="max" type="number" inputmode="numeric" min="0" placeholder="Maxim" value="<%= f.max %>"></label>
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend>Stare</legend>
+        <div class="choice-row">
+          <label class="choice"><input type="radio" name="stare" value="" <%= !f.condition ? 'checked' : '' %>><span>Toate</span></label>
+          <% conditions.forEach(function (c) { %><label class="choice"><input type="radio" name="stare" value="<%= c.id %>" <%= f.condition === c.id ? 'checked' : '' %>><span><%= c.name %></span></label><% }) %>
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend>Vânzător</legend>
+        <div class="choice-row">
+          <label class="choice"><input type="radio" name="vanzator" value="" <%= !f.seller_type ? 'checked' : '' %>><span>Toți</span></label>
+          <label class="choice"><input type="radio" name="vanzator" value="firma" <%= f.seller_type === 'firma' ? 'checked' : '' %>><span>Firme</span></label>
+          <label class="choice"><input type="radio" name="vanzator" value="persoana" <%= f.seller_type === 'persoana' ? 'checked' : '' %>><span>Persoane</span></label>
+        </div>
+      </fieldset>
+      <label class="check"><input type="checkbox" name="livrare" value="livrare" <%= f.delivery ? 'checked' : '' %>> Doar cu livrare de la vânzător</label>
+      <label class="check"><input type="checkbox" name="gratuit" value="1" <%= f.free ? 'checked' : '' %>> Doar materiale gratuite</label>
+      <input type="hidden" name="sortare" value="<%= f.sort %>">
+      <% if (qp.grup) { %><input type="hidden" name="grup" value="<%= qp.grup %>"><% } %>
+      <div class="filters-apply stack" style="gap:8px">
+        <button class="btn btn--block" type="submit">Aplică filtrele</button>
+        <a class="btn btn--ghost btn--block btn--sm" href="<%= baseUrl %>">Resetează</a>
+      </div>
+    </form>
+
+    <div>
+      <div class="toolbar">
+        <p class="count" aria-live="polite"><%= plural(total, 'anunț găsit', 'anunțuri găsite', 'de anunțuri găsite') %></p>
+        <div style="display:flex;gap:8px;align-items:center">
+          <button class="btn btn--ghost btn--sm filters-btn" type="button" data-open-filters><i data-lucide="sliders-horizontal"></i> Filtre<%= active.length ? ' (' + active.length + ')' : '' %></button>
+          <label for="sort" class="sr-only">Sortează</label>
+          <select class="select" id="sort" data-sort>
+            <% [['recente','Recomandate'],['noi','Cele mai noi'],['pret_asc','Preț crescător'],['pret_desc','Preț descrescător'],['populare','Cele mai văzute']].forEach(function (s) { %>
+              <option value="<%= buildQuery(baseUrl, Object.assign({}, qp, { sortare: s[0] === 'recente' ? '' : s[0] })) %>" <%= (f.sort || 'recente') === s[0] ? 'selected' : '' %>><%= s[1] %></option>
+            <% }) %>
+          </select>
+        </div>
+      </div>
+
+      <% if (active.length) { %>
+        <div class="active-filters" aria-label="Filtre active">
+          <% active.forEach(function (a) { %><a class="chip" href="<%= without(a[0]) %>" aria-label="Elimină filtrul <%= a[1] %>"><%= a[1] %> <i data-lucide="x"></i></a><% }) %>
+        </div>
+      <% } %>
+
+      <% if (rows.length) { %>
+        <div class="grid-cards">
+          <% rows.forEach(function (l) { %><%- include('partials/card', { l: l }) %><% }) %>
+        </div>
+        <% if (pages > 1) { %>
+          <nav class="pagination" aria-label="Paginare">
+            <% if (page > 1) { %><a href="<%= pageUrl(page - 1) %>" aria-label="Pagina anterioară"><i data-lucide="chevron-left"></i></a><% } %>
+            <% for (var p = 1; p <= pages; p++) { if (p === 1 || p === pages || Math.abs(p - page) <= 1) { %>
+              <% if (p === page) { %><span aria-current="page"><%= p %></span><% } else { %><a href="<%= pageUrl(p) %>"><%= p %></a><% } %>
+            <% } else if (Math.abs(p - page) === 2) { %><span class="disabled" aria-hidden="true">…</span><% } } %>
+            <% if (page < pages) { %><a href="<%= pageUrl(page + 1) %>" aria-label="Pagina următoare"><i data-lucide="chevron-right"></i></a><% } %>
+          </nav>
+        <% } %>
+      <% } else { %>
+        <div class="empty">
+          <i data-lucide="search-x" class="big"></i>
+          <h2>Niciun anunț găsit</h2>
+          <p>Încearcă alte cuvinte cheie, extinde căutarea la toată țara sau elimină câteva filtre.</p>
+          <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+            <a class="btn" href="/anunturi">Vezi toate anunțurile</a>
+            <a class="btn btn--ghost" href="/adauga-anunt">Publică ce cauți</a>
+          </div>
+        </div>
+      <% } %>
+    </div>
+  </div>
+</div>
+
+<%- include('partials/foot') %>

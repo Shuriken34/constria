@@ -1,0 +1,21 @@
+<%- include('partials/head') %>
+<section class="page-hero">
+  <div class="container">
+    <nav aria-label="Breadcrumb"><ol class="breadcrumbs"><li><a href="/">Acasă</a></li><li aria-current="page">Ghiduri</li></ol></nav>
+    <h1 class="display display-xl">Ghiduri și noutăți</h1>
+    <p class="lead" style="margin-top:16px">Sfaturi practice de la meseriași: cum alegi materialele, cum calculezi cantitățile și cum vinzi surplusul.</p>
+  </div>
+</section>
+<section class="container" style="padding-bottom:96px">
+  <div class="posts">
+    <% posts.forEach(function (p) { %>
+      <a class="post-card reveal" href="/blog/<%= p.slug %>">
+        <figure><img src="<%= p.image %>" alt="" loading="lazy" width="800" height="550"></figure>
+        <span class="tag tag--plum" style="align-self:flex-start"><%= p.tag %></span>
+        <h2 class="display" style="font-size:1.7rem"><%= p.title %></h2>
+        <p><%= p.excerpt %></p>
+      </a>
+    <% }) %>
+  </div>
+</section>
+<%- include('partials/foot') %>

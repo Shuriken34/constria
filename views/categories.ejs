@@ -1,0 +1,28 @@
+<%- include('partials/head') %>
+<section class="page-hero">
+  <div class="container">
+    <nav aria-label="Breadcrumb"><ol class="breadcrumbs"><li><a href="/">Acasă</a></li><li aria-current="page">Categorii</li></ol></nav>
+    <h1 class="display display-xl">Categorii</h1>
+    <p class="lead" style="margin-top:16px">Materiale, utilaje și echipamente de construcții – de vânzare sau de închiriat, de la vânzători din toată țara.</p>
+  </div>
+</section>
+<% groups.forEach(function (g, gi) { %>
+<section class="container" style="padding-bottom:<%= gi === groups.length - 1 ? 96 : 56 %>px">
+  <div class="section-head" style="margin-bottom:22px">
+    <h2 class="display display-m"><%= g.name %></h2>
+    <a class="link-arrow" href="<%= g.path %>">Vezi toate anunțurile <i data-lucide="arrow-right"></i></a>
+  </div>
+  <div class="cat-grid">
+    <% catsByGroup(g.id).forEach(function (c) { %>
+      <a class="cat-tile reveal" href="/categorie/<%= c.slug %>">
+        <img src="<%= c.image %>" alt="" loading="lazy" width="800" height="600">
+        <div class="cat-tile-body">
+          <div><h3><%= c.name %></h3><small><%= plural(counts[c.slug] || 0, 'anunț', 'anunțuri') %></small></div>
+          <span class="round" aria-hidden="true"><i data-lucide="arrow-up-right"></i></span>
+        </div>
+      </a>
+    <% }) %>
+  </div>
+</section>
+<% }) %>
+<%- include('partials/foot') %>

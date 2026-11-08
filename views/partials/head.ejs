@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="ro" class="no-js">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title><%= title ? title + ' | Constria' : 'Constria – Materiale de construcții de la oameni reali' %></title>
+  <meta name="description" content="<%= description %>">
+  <meta name="theme-color" content="#4a002a">
+  <meta property="og:site_name" content="Constria">
+  <meta property="og:title" content="<%= title || 'Constria' %>">
+  <meta property="og:description" content="<%= description %>">
+  <% if (typeof ogImage !== 'undefined' && ogImage) { %><meta property="og:image" content="<%= imgSrc(ogImage) %>"><% } %>
+  <link rel="icon" href="/img/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://images.unsplash.com">
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Figtree:wght@400;500;600;700;800&display=swap&subset=latin-ext" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  <script>document.documentElement.classList.replace('no-js','js');if(matchMedia('(prefers-reduced-motion: reduce)').matches)document.documentElement.classList.add('reduce-motion');</script>
+</head>
+<body class="<%= typeof bodyClass !== 'undefined' ? bodyClass : '' %>">
+<a class="skip-link" href="#main">Sari la conținut</a>
+
+<header class="site-header" id="site-header">
+  <div class="container header-inner">
+    <div class="header-left">
+      <button class="icon-btn" type="button" data-open="search-overlay" aria-label="Caută materiale" aria-controls="search-overlay"><i data-lucide="search"></i></button>
+      <button class="header-link only-desktop" type="button" id="mega-toggle" aria-expanded="false" aria-controls="mega">Categorii <i data-lucide="chevron-down"></i></button>
+      <nav class="header-nav" aria-label="Navigare principală">
+        <a class="header-link" href="/materiale" <%- path === '/materiale' ? 'aria-current="page"' : '' %>>Materiale</a>
+        <a class="header-link" href="/utilaje" <%- path === '/utilaje' ? 'aria-current="page"' : '' %>>Utilaje</a>
+        <a class="header-link" href="/scule" <%- path === '/scule' ? 'aria-current="page"' : '' %>>Scule</a>
+        <a class="header-link" href="/calculator" <%- path === '/calculator' ? 'aria-current="page"' : '' %>>Calculator</a>
+      </nav>
+    </div>
+    <div class="header-center">
+      <a class="logo" href="/" aria-label="Constria – pagina principală"><%- include('logo') %></a>
+    </div>
+    <div class="header-right">
+      <% if (user) { %>
+        <a class="icon-btn only-desktop" href="/cont/favorite" aria-label="Anunțuri salvate"><i data-lucide="heart"></i></a>
+        <a class="icon-btn" href="/cont/mesaje" aria-label="Mesaje<%= unread ? ', ' + unread + ' necitite' : '' %>"><i data-lucide="message-circle"></i><% if (unread) { %><span class="badge-dot" aria-hidden="true"><%= unread > 9 ? '9+' : unread %></span><% } %></a>
+        <a class="icon-btn only-desktop" href="/cont" aria-label="Contul meu"><span class="avatar avatar--xs"><% if (user.avatar) { %><img src="<%= imgSrc(user.avatar) %>" alt=""><% } else { %><%= initials(user.name) %><% } %></span></a>
+      <% } else { %>
+        <a class="header-link only-desktop" href="/autentificare">Intră în cont</a>
+      <% } %>
+      <a class="btn btn--red btn--sm header-cta only-desktop" href="/adauga-anunt"><i data-lucide="plus"></i><span class="header-cta-text">Adaugă anunț</span></a>
+      <button class="icon-btn only-mobile" type="button" data-open="drawer" aria-label="Deschide meniul" aria-controls="drawer"><i data-lucide="menu"></i></button>
+    </div>
+  </div>
+
+  <div class="mega" id="mega" role="region" aria-label="Categorii">
+    <div class="container mega-inner">
+      <div class="mega-intro">
+        <h2>Ce construiești azi?</h2>
+        <p class="muted">Materiale, utilaje și scule de construcții – de vânzare sau de închiriat, de la vânzători din județul tău.</p>
+        <p style="margin-top:18px"><a class="link-arrow" href="/categorii">Toate categoriile <i data-lucide="arrow-right"></i></a></p>
+      </div>
+      <div class="mega-groups">
+        <% groups.forEach(function (g) { %>
+          <div>
+            <a class="mega-group-title" href="<%= g.path %>"><%= g.name %> <i data-lucide="arrow-right"></i></a>
+            <div class="mega-grid">
+              <% catsByGroup(g.id).forEach(function (c) { %>
+                <a class="mega-tile" href="/categorie/<%= c.slug %>"><img src="<%= c.image.replace('w=800', 'w=120') %>" alt="" loading="lazy" width="44" height="44"><span><%= c.short %></span></a>
+              <% }) %>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="overlay" id="search-overlay" role="dialog" aria-modal="true" aria-label="Căutare" hidden>
+  <div class="container">
+    <div class="overlay-top">
+      <a class="logo" href="/" style="color:var(--beige)"><%- include('logo') %></a>
+      <button class="icon-btn" type="button" data-close aria-label="Închide căutarea"><i data-lucide="x"></i></button>
+    </div>
+    <form class="search-big" action="/anunturi" method="get" role="search">
+      <label class="eyebrow" for="overlay-q">Ce materiale cauți?</label>
+      <div class="search-big-row">
+        <input id="overlay-q" name="q" type="search" placeholder="BCA, ciment, OSB…" autocomplete="off" enterkeyhint="search">
+        <button class="icon-btn" type="submit" aria-label="Caută" style="width:64px;height:64px"><i data-lucide="arrow-right"></i></button>
+      </div>
+      <p class="eyebrow" style="margin:36px 0 14px">Căutări populare</p>
+      <div class="chips">
+        <% ['BCA', 'Ciment', 'OSB', 'Fier beton', 'Buldoexcavator', 'Miniexcavator', 'Nacelă', 'Rotopercutor', 'Flex', 'Nivelă laser'].forEach(function (s) { %>
+          <a class="chip" href="/anunturi?q=<%= encodeURIComponent(s) %>"><%= s %></a>
+        <% }) %>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="overlay drawer" id="drawer" role="dialog" aria-modal="true" aria-label="Meniu" hidden>
+  <div class="container" style="display:flex;flex-direction:column;min-height:100%">
+    <div class="overlay-top">
+      <a class="logo" href="/" style="color:var(--beige)"><%- include('logo') %></a>
+      <button class="icon-btn" type="button" data-close aria-label="Închide meniul"><i data-lucide="x"></i></button>
+    </div>
+    <nav class="drawer-nav" aria-label="Meniu mobil">
+      <a href="/materiale">Materiale</a>
+      <a href="/utilaje">Utilaje</a>
+      <a href="/scule">Scule</a>
+      <a href="/categorii">Categorii</a>
+      <a href="/calculator">Calculator</a>
+      <a href="/cum-functioneaza">Cum funcționează</a>
+      <a href="/blog">Ghiduri</a>
+      <a href="/contact">Contact</a>
+    </nav>
+    <div class="drawer-foot">
+      <a class="btn btn--red" href="/adauga-anunt"><i data-lucide="plus"></i> Adaugă anunț</a>
+      <% if (user) { %>
+        <a class="btn btn--light" href="/cont"><i data-lucide="user"></i> Contul meu</a>
+      <% } else { %>
+        <a class="btn btn--light" href="/autentificare"><i data-lucide="log-in"></i> Intră în cont</a>
+      <% } %>
+    </div>
+  </div>
+</div>
+
+<div class="toasts" aria-live="polite" role="status">
+  <% flash.forEach(function (f) { %>
+    <div class="toast toast--<%= f.type %>"><i data-lucide="<%= f.type === 'error' ? 'alert-circle' : f.type === 'success' ? 'check-circle-2' : 'info' %>"></i><p><%= f.text %></p><button type="button" data-dismiss aria-label="Închide notificarea"><i data-lucide="x"></i></button></div>
+  <% }) %>
+</div>
+
+<main id="main" tabindex="-1">

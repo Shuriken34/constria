@@ -1,0 +1,21 @@
+<%- include('../partials/head') %>
+<div class="container account">
+  <%- include('../partials/account-nav') %>
+  <div>
+    <div class="account-head">
+      <h1 class="display display-l">Anunțurile mele</h1>
+      <a class="btn btn--red" href="/adauga-anunt"><i data-lucide="plus"></i> Adaugă anunț</a>
+    </div>
+    <nav class="seg" aria-label="Filtrează după stare">
+      <% [['activ','Active'],['vandut','Vândute'],['inactiv','Inactive'],['blocat','Blocate']].forEach(function (s) { if (s[0] === 'blocat' && !counts.blocat) return; %>
+        <a href="/cont/anunturi?status=<%= s[0] %>" <%- status === s[0] ? 'aria-current="page"' : '' %>><%= s[1] %> <small><%= counts[s[0]] || 0 %></small></a>
+      <% }) %>
+    </nav>
+    <% if (listings.length) { %>
+      <div class="list"><% listings.forEach(function (l) { %><%- include('../partials/my-listing-row', { l: l }) %><% }) %></div>
+    <% } else { %>
+      <div class="empty"><i data-lucide="inbox" class="big"></i><h2>Nimic aici</h2><p><%= status === 'activ' ? 'Nu ai anunțuri active. Publică unul acum – e gratuit.' : 'Nu ai anunțuri în această secțiune.' %></p><% if (status === 'activ') { %><a class="btn btn--red" href="/adauga-anunt">Adaugă anunț</a><% } %></div>
+    <% } %>
+  </div>
+</div>
+<%- include('../partials/foot') %>

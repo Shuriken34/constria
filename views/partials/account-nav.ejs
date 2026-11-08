@@ -1,0 +1,11 @@
+<nav class="account-nav" aria-label="Meniu cont">
+  <a href="/cont" <%- tab === 'panou' ? 'aria-current="page"' : '' %>><i data-lucide="layout-dashboard"></i> Panou</a>
+  <a href="/cont/anunturi" <%- tab === 'anunturi' ? 'aria-current="page"' : '' %>><i data-lucide="list"></i> Anunțurile mele</a>
+  <a href="/cont/mesaje" <%- tab === 'mesaje' ? 'aria-current="page"' : '' %>><i data-lucide="message-circle"></i> Mesaje<% if (unread) { %><span class="count"><%= unread %></span><% } %></a>
+  <a href="/cont/favorite" <%- tab === 'favorite' ? 'aria-current="page"' : '' %>><i data-lucide="heart"></i> Favorite</a>
+  <a href="/cont/setari" <%- tab === 'setari' ? 'aria-current="page"' : '' %>><i data-lucide="settings"></i> Setări</a>
+  <a href="/vanzator/<%= user.id %>"><i data-lucide="user"></i> Profil public</a>
+  <% if (user.role === 'admin') { %><a href="/admin"><i data-lucide="shield"></i> Administrare</a><% } %>
+  <hr>
+  <form method="post" action="/deconectare"><input type="hidden" name="_csrf" value="<%= csrf %>"><button type="submit"><i data-lucide="log-out"></i> Ieși din cont</button></form>
+</nav>

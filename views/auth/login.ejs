@@ -1,0 +1,34 @@
+<%- include('../partials/head') %>
+<div class="auth-wrap">
+  <div class="auth-art">
+    <img src="<%= images.heroAlt %>" alt="" width="1800" height="1200">
+    <div>
+      <p class="eyebrow">Bine ai revenit</p>
+      <p class="display display-l" style="margin-top:14px">Șantierul<br>te așteaptă</p>
+    </div>
+  </div>
+  <div class="auth-form">
+    <div>
+      <h1 class="display display-m">Intră în cont</h1>
+      <p class="muted" style="margin-bottom:28px">Nu ai cont? <a href="/inregistrare<%= next !== '/cont' ? '?next=' + encodeURIComponent(next) : '' %>"><strong>Creează unul gratuit</strong></a></p>
+      <% if (error) { %><div class="error-summary" role="alert" tabindex="-1" data-error-summary><h2>Nu te-am putut autentifica</h2><p style="margin:0"><%= error %></p></div><% } %>
+      <form class="stack" method="post" action="/autentificare" data-loading>
+        <input type="hidden" name="_csrf" value="<%= csrf %>">
+        <input type="hidden" name="next" value="<%= next %>">
+        <div class="field">
+          <label for="f-email">Email</label>
+          <input class="input" id="f-email" name="email" type="email" autocomplete="email" required value="<%= form.email || '' %>" autofocus>
+        </div>
+        <div class="field">
+          <div style="display:flex;justify-content:space-between;align-items:baseline"><label for="f-password">Parolă</label><a href="/parola-uitata" style="font-size:.88rem;font-weight:700">Ai uitat parola?</a></div>
+          <div class="pw-wrap">
+            <input class="input" id="f-password" name="password" type="password" autocomplete="current-password" required>
+            <button class="pw-toggle" type="button" data-pw-toggle="f-password" aria-label="Arată parola" aria-pressed="false"><i data-lucide="eye"></i></button>
+          </div>
+        </div>
+        <button class="btn btn--lg btn--block" type="submit">Intră în cont</button>
+      </form>
+    </div>
+  </div>
+</div>
+<%- include('../partials/foot') %>

@@ -1,0 +1,32 @@
+<div class="row-item">
+  <img src="<%= imgSrc(l.cover).replace('w=1200','w=200') %>" alt="" loading="lazy">
+  <div style="min-width:0">
+    <h3><a href="<%= listingUrl(l) %>"><%= l.title %></a></h3>
+    <div class="sub">
+      <span class="tnum"><strong><%= formatPrice(l) %></strong><%= l.price_type !== 'gratuit' ? ' / ' + unitLabel(l.unit) : '' %></span>
+      <span><i data-lucide="eye"></i><%= l.views %></span>
+      <span><i data-lucide="heart"></i><%= l.fav_count %></span>
+      <span><i data-lucide="message-circle"></i><%= l.conv_count %></span>
+      <span>actualizat <%= timeAgo(l.updated_at) %></span>
+      <% if (l.status === 'blocat') { %><span class="tag tag--red">Blocat de moderator</span><% } %>
+    </div>
+  </div>
+  <div class="row-actions">
+    <% if (l.status !== 'blocat') { %>
+      <a class="btn btn--ghost btn--sm" href="/cont/anunturi/<%= l.id %>/editeaza"><i data-lucide="pencil"></i> Editează</a>
+      <form method="post" action="/cont/anunturi/<%= l.id %>/status">
+        <input type="hidden" name="_csrf" value="<%= csrf %>">
+        <% if (l.status === 'activ') { %>
+          <button class="btn btn--sm" name="status" value="vandut" type="submit"><i data-lucide="check"></i> Vândut</button>
+          <button class="btn btn--ghost btn--sm" name="status" value="inactiv" type="submit">Dezactivează</button>
+        <% } else { %>
+          <button class="btn btn--sm" name="status" value="activ" type="submit"><i data-lucide="rotate-ccw"></i> Reactivează</button>
+        <% } %>
+      </form>
+    <% } %>
+    <form method="post" action="/cont/anunturi/<%= l.id %>/sterge" data-confirm="Ștergi definitiv anunțul „<%= l.title %>”? Acțiunea nu poate fi anulată.">
+      <input type="hidden" name="_csrf" value="<%= csrf %>">
+      <button class="icon-btn" type="submit" aria-label="Șterge anunțul <%= l.title %>" style="color:var(--red-strong)"><i data-lucide="trash-2"></i></button>
+    </form>
+  </div>
+</div>

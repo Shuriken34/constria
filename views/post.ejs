@@ -1,0 +1,31 @@
+<%- include('partials/head') %>
+<article>
+  <header class="page-hero">
+    <div class="container container--narrow">
+      <nav aria-label="Breadcrumb"><ol class="breadcrumbs"><li><a href="/">Acasă</a></li><li><a href="/blog">Ghiduri</a></li><li aria-current="page"><%= truncate(post.title, 40) %></li></ol></nav>
+      <span class="tag tag--plum" style="margin-top:20px"><%= post.tag %></span>
+      <h1 class="display display-l" style="margin-top:14px"><%= post.title %></h1>
+      <p class="muted" style="margin-top:12px"><%= formatDate(post.created_at) %></p>
+    </div>
+  </header>
+  <div class="container">
+    <div class="post-cover"><img src="<%= post.image %>" alt="" width="1600" height="700"></div>
+  </div>
+  <div class="container container--narrow prose" style="padding-bottom:64px">
+    <p class="lead"><%= post.excerpt %></p>
+    <%- post.body %>
+  </div>
+</article>
+<% if (more.length) { %>
+<section class="section on-cream">
+  <div class="container">
+    <h2 class="display display-m" style="margin-bottom:28px">Citește și</h2>
+    <div class="posts">
+      <% more.forEach(function (p) { %>
+        <a class="post-card" href="/blog/<%= p.slug %>"><figure><img src="<%= p.image %>" alt="" loading="lazy"></figure><h3><%= p.title %></h3><p><%= p.excerpt %></p></a>
+      <% }) %>
+    </div>
+  </div>
+</section>
+<% } %>
+<%- include('partials/foot') %>

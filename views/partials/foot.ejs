@@ -1,0 +1,75 @@
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-news">
+        <h3>Constria</h3>
+        <p>Piața online unde constructorii, firmele și oamenii care renovează își vând și își cumpără materialele direct, fără comisioane.</p>
+        <a class="btn btn--light" href="/adauga-anunt"><i data-lucide="plus"></i> Publică gratuit</a>
+        <div class="socials">
+          <a href="https://www.facebook.com/" aria-label="Constria pe Facebook" rel="noopener" target="_blank"><i data-lucide="facebook"></i></a>
+          <a href="https://www.instagram.com/" aria-label="Constria pe Instagram" rel="noopener" target="_blank"><i data-lucide="instagram"></i></a>
+          <a href="https://www.youtube.com/" aria-label="Constria pe YouTube" rel="noopener" target="_blank"><i data-lucide="youtube"></i></a>
+        </div>
+      </div>
+      <div>
+        <h3>Materiale</h3>
+        <ul>
+          <% catsByGroup('materiale').slice(0, 6).forEach(function (c) { %><li><a href="/categorie/<%= c.slug %>"><%= c.short %></a></li><% }) %>
+          <li><a href="/materiale">Toate materialele</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Utilaje</h3>
+        <ul>
+          <% catsByGroup('utilaje').slice(0, 6).forEach(function (c) { %><li><a href="/categorie/<%= c.slug %>"><%= c.short %></a></li><% }) %>
+          <li><a href="/utilaje?tip=inchiriere">Utilaje de închiriat</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Scule</h3>
+        <ul>
+          <% catsByGroup('scule').slice(0, 6).forEach(function (c) { %><li><a href="/categorie/<%= c.slug %>"><%= c.short %></a></li><% }) %>
+          <li><a href="/scule?tip=inchiriere">Scule de închiriat</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Platforma</h3>
+        <ul>
+          <li><a href="/anunturi">Toate anunțurile</a></li>
+          <li><a href="/cum-functioneaza">Cum funcționează</a></li>
+          <li><a href="/calculator">Calculator materiale</a></li>
+          <li><a href="/siguranta">Sfaturi de siguranță</a></li>
+          <li><a href="/blog">Ghiduri și noutăți</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Companie</h3>
+        <ul>
+          <li><a href="/despre-noi">Despre noi</a></li>
+          <li><a href="/intrebari-frecvente">Întrebări frecvente</a></li>
+          <li><a href="/contact">Contact</a></li>
+          <li><a href="/inregistrare?tip=firma">Cont pentru firme</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-word" aria-hidden="true">Constr<span>ia</span></div>
+    <div class="footer-bottom">
+      <span>© <%= year %> Constria. Toate drepturile rezervate.</span>
+      <nav aria-label="Legal">
+        <a href="/termeni">Termeni și condiții</a>
+        <a href="/confidentialitate">Confidențialitate</a>
+        <a href="https://anpc.ro/" rel="noopener" target="_blank">ANPC</a>
+      </nav>
+    </div>
+  </div>
+</footer>
+
+<script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
+<script src="/js/main.js" defer></script>
+<% if (typeof scripts !== 'undefined') { scripts.forEach(function (s) { %><script src="<%= s %>" defer></script><% }) } %>
+</body>
+</html>

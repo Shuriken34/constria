@@ -1,0 +1,51 @@
+<%- include('partials/head') %>
+<section class="page-hero">
+  <div class="container container--narrow">
+    <nav aria-label="Breadcrumb"><ol class="breadcrumbs"><li><a href="/">Acasă</a></li><li aria-current="page"><%= title %></li></ol></nav>
+    <h1 class="display display-l"><%= title %></h1>
+    <p class="muted" style="margin-top:12px">Document șablon – trebuie revizuit de un jurist înainte de lansare.</p>
+  </div>
+</section>
+<section class="container container--narrow prose" style="padding-bottom:96px">
+<% if (doc === 'termeni') { %>
+  <h2>1. Despre Constria</h2>
+  <p>Constria este o platformă online de anunțuri care permite utilizatorilor (persoane fizice și juridice) să publice și să consulte anunțuri pentru vânzarea și cumpărarea de materiale de construcții pe teritoriul României.</p>
+  <h2>2. Rolul platformei</h2>
+  <p>Constria nu este parte în tranzacțiile dintre utilizatori. Nu vindem, nu cumpărăm, nu încasăm plăți și nu asigurăm transportul. Contractul de vânzare se încheie exclusiv între cumpărător și vânzător.</p>
+  <h2>3. Contul de utilizator</h2>
+  <ul>
+    <li>Pentru a publica anunțuri și a trimite mesaje este necesar un cont.</li>
+    <li>Ești responsabil pentru corectitudinea datelor și pentru păstrarea confidențialității parolei.</li>
+    <li>Conturile de firmă trebuie să indice denumirea și CUI-ul reale.</li>
+  </ul>
+  <h2>4. Reguli pentru anunțuri</h2>
+  <ul>
+    <li>Anunțurile trebuie să privească materiale de construcții, scule sau utilaje conexe.</li>
+    <li>Fotografiile trebuie să înfățișeze produsul real.</li>
+    <li>Prețul afișat trebuie să corespundă unității de măsură alese.</li>
+    <li>Sunt interzise anunțurile înșelătoare, duplicate sau cu produse ilegale.</li>
+  </ul>
+  <h2>5. Moderare</h2>
+  <p>Ne rezervăm dreptul de a bloca anunțuri și de a suspenda conturi care încalcă acești termeni, fără notificare prealabilă.</p>
+  <h2>6. Răspundere</h2>
+  <p>Utilizatorii răspund integral pentru conținutul publicat și pentru tranzacțiile încheiate. Constria nu garantează calitatea, siguranța sau legalitatea produselor din anunțuri.</p>
+  <h2>7. Contact</h2>
+  <p>Pentru orice întrebare folosește <a href="/contact">formularul de contact</a>.</p>
+<% } else { %>
+  <h2>1. Ce date colectăm</h2>
+  <ul>
+    <li>Date de cont: nume, email, telefon, județ, localitate, iar pentru firme denumirea și CUI-ul.</li>
+    <li>Conținut publicat: anunțuri, fotografii, mesaje și recenzii.</li>
+    <li>Date tehnice minime necesare funcționării (cookie de sesiune).</li>
+  </ul>
+  <h2>2. De ce le folosim</h2>
+  <p>Pentru a-ți administra contul, pentru a afișa anunțurile tale și pentru a permite cumpărătorilor să te contacteze. Numărul de telefon este afișat cumpărătorilor doar la cerere, din pagina anunțului.</p>
+  <h2>3. Cookie-uri</h2>
+  <p>Folosim un singur cookie strict necesar, pentru menținerea sesiunii de autentificare. Nu folosim cookie-uri de publicitate.</p>
+  <h2>4. Drepturile tale (GDPR)</h2>
+  <p>Ai dreptul de acces, rectificare, ștergere, restricționare și portabilitate a datelor. Îți poți șterge contul oricând din <a href="/cont/setari">Setări cont</a>, iar anunțurile și mesajele tale vor fi șterse.</p>
+  <h2>5. Contact</h2>
+  <p>Pentru solicitări privind datele personale folosește <a href="/contact">formularul de contact</a>. Te poți adresa și ANSPDCP.</p>
+<% } %>
+</section>
+<%- include('partials/foot') %>

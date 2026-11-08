@@ -1,0 +1,47 @@
+<%- include('partials/head') %>
+<section class="page-hero">
+  <div class="container">
+    <nav aria-label="Breadcrumb"><ol class="breadcrumbs"><li><a href="/">Acasă</a></li><li aria-current="page">Despre noi</li></ol></nav>
+    <h1 class="display display-xxl">Despre noi</h1>
+  </div>
+</section>
+<section class="fullbleed on-dark">
+  <img src="<%= images.about %>" alt="Doi muncitori lucrând pe șantier" loading="lazy" data-parallax width="1600" height="1000">
+  <div class="container fullbleed-text">
+    <h2 class="display display-l">Nimic nu se pierde.<br>Totul se construiește.</h2>
+  </div>
+</section>
+<section class="section">
+  <div class="container split">
+    <div class="prose">
+      <p class="eyebrow">Povestea noastră</p>
+      <h2 style="margin-top:14px">Am pornit de la o curte plină de BCA</h2>
+      <p>La finalul fiecărui șantier rămân materiale: un palet de BCA început, zece saci de adeziv, câțiva metri pătrați de gresie. Pentru constructor sunt bani blocați. Pentru cineva care renovează, sunt exact ce caută – la jumătate de preț.</p>
+      <p>Constria a apărut ca să lege aceste două lumi. O piață simplă, în limba română, dedicată exclusiv materialelor de construcții, unde vorbești direct cu vânzătorul și nu plătești niciun comision.</p>
+      <h3>Ce credem</h3>
+      <ul>
+        <li><strong>Direct și cinstit.</strong> Fără intermediari, fără taxe ascunse.</li>
+        <li><strong>Local.</strong> Materialele circulă în județ, nu peste toată țara.</li>
+        <li><strong>Responsabil.</strong> Fiecare palet refolosit înseamnă mai puțin moloz și mai puțină risipă.</li>
+      </ul>
+    </div>
+    <figure><img src="<%= images.crane %>" alt="Macara turn pe fundal de cer" loading="lazy" width="1400" height="1750"></figure>
+  </div>
+</section>
+<section class="section section--tight on-darker">
+  <div class="container">
+    <div class="stats">
+      <div class="stat"><strong class="tnum"><%= formatNumber(stats.listings) %></strong><span>Anunțuri active</span></div>
+      <div class="stat"><strong class="tnum"><%= formatNumber(stats.users) %></strong><span>Membri</span></div>
+      <div class="stat"><strong class="tnum"><%= formatNumber(stats.sold) %></strong><span>Anunțuri vândute</span></div>
+      <div class="stat"><strong class="tnum">0%</strong><span>Comision</span></div>
+    </div>
+  </div>
+</section>
+<section class="section cta-band">
+  <div class="container">
+    <h2 class="display display-l" style="margin-bottom:24px">Hai în comunitate</h2>
+    <p style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap"><a class="btn btn--red btn--lg" href="/inregistrare">Creează cont gratuit</a><a class="btn btn--ghost btn--lg" href="/contact">Scrie-ne</a></p>
+  </div>
+</section>
+<%- include('partials/foot') %>

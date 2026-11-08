@@ -1,0 +1,24 @@
+<%- include('partials/head') %>
+<section class="page-hero">
+  <div class="container">
+    <nav aria-label="Breadcrumb"><ol class="breadcrumbs"><li><a href="/">Acasă</a></li><li aria-current="page">Siguranță</li></ol></nav>
+    <h1 class="display display-xl">Cumpără și vinde în siguranță</h1>
+    <p class="lead" style="margin-top:16px">Majoritatea tranzacțiilor de pe Constria decurg fără probleme. Câteva reguli simple te feresc de neplăceri.</p>
+  </div>
+</section>
+<section class="container" style="padding-bottom:64px">
+  <div class="tips"><% safetyTips.forEach(function (t) { %><div class="tip"><%= t %></div><% }) %></div>
+</section>
+<section class="section on-dark">
+  <div class="container container--narrow prose">
+    <h2 style="margin-top:0">Semne de alarmă</h2>
+    <ul>
+      <li>Vânzătorul cere avans prin servicii de transfer de bani înainte să vezi marfa.</li>
+      <li>Ți se trimite un link de „plată sigură” sau de „curier” pe care trebuie să introduci datele cardului.</li>
+      <li>Prețul este mult sub cel al pieței, iar vânzătorul insistă să te grăbești.</li>
+      <li>Persoana refuză să vorbească la telefon sau să îți arate marfa.</li>
+    </ul>
+    <p>Ai observat ceva suspect? Folosește butonul <strong>„Raportează anunțul”</strong> din pagina anunțului sau <a href="/contact" style="color:var(--beige)">scrie-ne</a>.</p>
+  </div>
+</section>
+<%- include('partials/foot') %>

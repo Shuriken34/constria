@@ -1,0 +1,149 @@
+<%- include('../partials/head') %>
+<% function inv(n) { return errors[n] ? 'aria-invalid="true" aria-describedby="' + n + '-err"' : ''; } var action = editing ? '/cont/anunturi/' + editing.id + '/editeaza' : '/adauga-anunt'; %>
+<section class="page-hero">
+  <div class="container container--narrow">
+    <p class="eyebrow"><%= editing ? 'Editare' : 'Anunț nou' %></p>
+    <h1 class="display display-l" style="margin-top:12px"><%= editing ? 'Editează anunțul' : 'Ce vinzi azi?' %></h1>
+    <% if (!editing) { %><p class="lead" style="margin-top:12px">Publicarea este gratuită. Un anunț complet, cu poze clare, se vinde mult mai repede.</p><% } %>
+  </div>
+</section>
+<div class="container container--narrow" style="padding-bottom:96px">
+  <%- include('../partials/error-summary') %>
+  <form method="post" action="<%= action %>" enctype="multipart/form-data" novalidate data-loading data-autosave="<%= editing ? '' : 'listing-draft' %>">
+    <input type="hidden" name="_csrf" value="<%= csrf %>">
+
+    <div class="form-card stack">
+      <div><h2>Despre produs</h2><p class="muted">Ce materiale vinzi și în ce stare sunt.</p></div>
+      <div class="field">
+        <label for="f-title">Titlu <span class="req" aria-hidden="true">*</span></label>
+        <input class="input" id="f-title" name="title" maxlength="90" required value="<%= form.title || '' %>" placeholder="ex: BCA Ytong 25 cm – 2 paleți" <%- inv('title') %> data-counter="90">
+        <p class="help"><span data-count-for="f-title">0</span>/90 caractere. Include materialul, dimensiunea și cantitatea.</p>
+        <%- include('../partials/field-error', { name: 'title' }) %>
+      </div>
+      <div class="field">
+        <label for="f-category">Categorie <span class="req" aria-hidden="true">*</span></label>
+        <select class="select" id="f-category" name="category" required <%- inv('category') %> data-category-select><option value="">Alege categoria</option>
+          <% groups.forEach(function (g) { %><optgroup label="<%= g.name %>"><% catsByGroup(g.id).forEach(function (c) { %><option value="<%= c.slug %>" data-group="<%= c.group %>" <%= form.category === c.slug ? 'selected' : '' %>><%= c.name %></option><% }) %></optgroup><% }) %>
+        </select>
+        <%- include('../partials/field-error', { name: 'category' }) %>
+      </div>
+      <div class="stack" data-machine-fields <%= catMap[form.category] && rentableGroups.includes(catMap[form.category].group) ? '' : 'hidden' %> style="gap:18px">
+        <fieldset>
+          <legend>Tip anunț</legend>
+          <div class="choice-row">
+            <% listingTypes.forEach(function (t) { %><label class="choice"><input type="radio" name="listing_type" value="<%= t.id %>" data-listing-type <%= (form.listing_type || 'vanzare') === t.id ? 'checked' : '' %>><span><i data-lucide="<%= t.id === 'inchiriere' ? 'calendar-clock' : 'tag' %>"></i> <%= t.name %></span></label><% }) %>
+          </div>
+          <p class="help" style="margin-top:6px">La închiriere, alege prețul pe oră, zi, săptămână sau lună.</p>
+        </fieldset>
+        <div class="form-grid">
+          <div class="field"><label for="f-brand">Marcă</label><input class="input" id="f-brand" name="brand" maxlength="60" value="<%= form.brand || '' %>" placeholder="ex: JCB, Bobcat, Bosch, Makita"></div>
+          <div class="field"><label for="f-model">Model</label><input class="input" id="f-model" name="model" maxlength="60" value="<%= form.model || '' %>" placeholder="ex: 3CX, E19"></div>
+          <div class="field"><label for="f-year">An fabricație</label><input class="input" id="f-year" name="year" type="number" inputmode="numeric" min="1950" max="<%= year + 1 %>" value="<%= form.year || '' %>" <%- inv('year') %>><%- include('../partials/field-error', { name: 'year' }) %></div>
+          <div class="field" data-hours-field <%= catMap[form.category] && catMap[form.category].group === 'utilaje' ? '' : 'hidden' %>><label for="f-hours">Ore de funcționare</label><input class="input" id="f-hours" name="hours" type="number" inputmode="numeric" min="0" value="<%= form.hours ?? '' %>" placeholder="ex: 3200"></div>
+        </div>
+      </div>
+      <fieldset>
+        <legend>Stare</legend>
+        <div class="choice-row">
+          <% conditions.forEach(function (c) { %><label class="choice"><input type="radio" name="condition" value="<%= c.id %>" <%= (form.condition || 'nou') === c.id ? 'checked' : '' %>><span><%= c.name %></span></label><% }) %>
+        </div>
+      </fieldset>
+      <div class="field">
+        <label for="f-description">Descriere <span class="req" aria-hidden="true">*</span></label>
+        <textarea class="textarea" id="f-description" name="description" maxlength="5000" required placeholder="Descrie materialul: marcă, dimensiuni, cantitate, de când e, cum a fost depozitat, dacă se poate tăia/livra etc." <%- inv('description') %> data-counter="5000"><%= form.description || '' %></textarea>
+        <p class="help"><span data-count-for="f-description">0</span>/5000 caractere, minimum 30.</p>
+        <%- include('../partials/field-error', { name: 'description' }) %>
+      </div>
+    </div>
+
+    <div class="form-card stack">
+      <div><h2>Fotografii</h2><p class="muted">Până la <%= maxImages %> imagini JPG, PNG sau WEBP, maximum 6 MB fiecare. Prima imagine este coperta.</p></div>
+      <% if (imgs.length) { %>
+        <fieldset>
+          <legend>Fotografii existente</legend>
+          <div class="thumbs">
+            <% imgs.forEach(function (im, i) { %>
+              <div class="thumb" data-thumb>
+                <img src="<%= imgSrc(im.path).replace('w=1200','w=300') %>" alt="Fotografia <%= i + 1 %>">
+                <% if (i === 0) { %><span class="tag first-badge">Copertă</span><% } %>
+                <div class="thumb-actions">
+                  <label><input type="radio" name="cover" value="<%= im.id %>" <%= i === 0 ? 'checked' : '' %>> Copertă</label>
+                  <label><input type="checkbox" name="remove_images" value="<%= im.id %>" data-remove-img> Șterge</label>
+                </div>
+              </div>
+            <% }) %>
+          </div>
+        </fieldset>
+      <% } %>
+      <div class="field">
+        <div class="dropzone" data-dropzone id="f-images">
+          <i data-lucide="image-plus"></i>
+          <p><strong>Trage pozele aici</strong> sau apasă pentru a le alege</p>
+          <p class="help">Poze clare, la lumină naturală. Arată eticheta și ambalajul.</p>
+          <input type="file" name="images" accept="image/jpeg,image/png,image/webp" multiple aria-label="Alege fotografii" <%- inv('images') %> data-max="<%= maxImages - imgs.length %>">
+        </div>
+        <div class="thumbs" data-previews aria-live="polite"></div>
+        <%- include('../partials/field-error', { name: 'images' }) %>
+      </div>
+    </div>
+
+    <div class="form-card stack">
+      <div><h2>Preț și cantitate</h2><p class="muted">Prețul se afișează pe unitatea de măsură aleasă.</p></div>
+      <fieldset>
+        <legend>Tip preț</legend>
+        <div class="choice-row">
+          <% priceTypes.forEach(function (p) { %><label class="choice"><input type="radio" name="price_type" value="<%= p.id %>" data-price-type <%= (form.price_type || 'fix') === p.id ? 'checked' : '' %>><span><%= p.name %></span></label><% }) %>
+        </div>
+      </fieldset>
+      <div class="form-grid">
+        <div class="field" data-price-field>
+          <label for="f-price">Preț <span class="req" aria-hidden="true">*</span></label>
+          <div class="input-group"><input class="input" id="f-price" name="price" type="text" inputmode="decimal" value="<%= form.price !== undefined && form.price !== null && form.price !== 0 ? form.price : '' %>" placeholder="0" <%- inv('price') %>><span class="addon">lei</span></div>
+          <%- include('../partials/field-error', { name: 'price' }) %>
+        </div>
+        <div class="field">
+          <label for="f-unit">Pe unitate</label>
+          <select class="select" id="f-unit" name="unit"><% units.forEach(function (u) { %><option value="<%= u.id %>" <%= form.unit === u.id ? 'selected' : '' %>><%= u.name %></option><% }) %></select>
+        </div>
+        <div class="field">
+          <label for="f-quantity">Cantitate disponibilă</label>
+          <input class="input" id="f-quantity" name="quantity" type="text" inputmode="decimal" value="<%= form.quantity || '' %>" placeholder="ex: 120" <%- inv('quantity') %>>
+          <p class="help">În aceeași unitate de măsură. Opțional.</p>
+          <%- include('../partials/field-error', { name: 'quantity' }) %>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-card stack">
+      <div><h2>Locație și transport</h2><p class="muted">De unde se ridică marfa și cum ajunge la cumpărător.</p></div>
+      <div class="form-grid">
+        <div class="field">
+          <label for="f-county">Județ <span class="req" aria-hidden="true">*</span></label>
+          <select class="select" id="f-county" name="county" required <%- inv('county') %>><option value="">Alege județul</option><% counties.forEach(function (c) { %><option <%= form.county === c ? 'selected' : '' %>><%= c %></option><% }) %></select>
+          <%- include('../partials/field-error', { name: 'county' }) %>
+        </div>
+        <div class="field">
+          <label for="f-city">Localitate <span class="req" aria-hidden="true">*</span></label>
+          <input class="input" id="f-city" name="city" required value="<%= form.city || '' %>" <%- inv('city') %>>
+          <%- include('../partials/field-error', { name: 'city' }) %>
+        </div>
+      </div>
+      <fieldset>
+        <legend>Predare</legend>
+        <div class="choice-row">
+          <% deliveryOptions.forEach(function (d) { %><label class="choice"><input type="radio" name="delivery" value="<%= d.id %>" <%= (form.delivery || 'ridicare') === d.id ? 'checked' : '' %>><span><%= d.name %></span></label><% }) %>
+        </div>
+      </fieldset>
+      <div class="field">
+        <label for="f-delivery_note">Detalii transport</label>
+        <input class="input" id="f-delivery_note" name="delivery_note" maxlength="300" value="<%= form.delivery_note || '' %>" placeholder="ex: Livrez cu camion cu macara în raza de 30 km, 150 lei">
+      </div>
+    </div>
+
+    <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:24px;flex-wrap:wrap">
+      <a class="btn btn--ghost" href="<%= editing ? listingUrl(editing) : '/cont' %>">Renunță</a>
+      <button class="btn btn--red btn--lg" type="submit"><i data-lucide="<%= editing ? 'save' : 'send' %>"></i> <%= editing ? 'Salvează modificările' : 'Publică anunțul' %></button>
+    </div>
+  </form>
+</div>
+<%- include('../partials/foot') %>

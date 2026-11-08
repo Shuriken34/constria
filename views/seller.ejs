@@ -1,0 +1,72 @@
+<%- include('partials/head') %>
+<% var display = s.company_name || s.name; %>
+<section class="page-hero on-dark" style="padding-block:clamp(48px,7vw,96px)">
+  <div class="container">
+    <div class="profile-hero">
+      <span class="avatar avatar--lg" style="--s:120px"><% if (s.avatar) { %><img src="<%= imgSrc(s.avatar) %>" alt=""><% } else { %><%= initials(display) %><% } %></span>
+      <div>
+        <p class="eyebrow"><%= s.account_type === 'firma' ? 'Firmă' : 'Persoană fizică' %></p>
+        <h1 class="display display-l" style="margin-top:10px"><%= display %></h1>
+        <div class="meta-line" style="color:var(--beige)">
+          <span><i data-lucide="map-pin"></i><%= s.city %>, <%= s.county %></span>
+          <span><i data-lucide="calendar"></i>Membru din <%= formatDate(s.created_at) %></span>
+          <% if (s.last_seen) { %><span><i data-lucide="activity"></i>Activ <%= timeAgo(s.last_seen) %></span><% } %>
+          <% if (s.verified) { %><span class="verified"><i data-lucide="badge-check"></i> Verificat</span><% } %>
+        </div>
+        <p style="margin-top:12px"><%- include('partials/stars', { rating: stats.rating }) %> <strong><%= stats.rating ? String(stats.rating).replace('.', ',') : '–' %></strong> · <%= plural(stats.reviews, 'recenzie', 'recenzii') %> · <%= plural(stats.active, 'anunț activ', 'anunțuri active', 'de anunțuri active') %></p>
+      </div>
+    </div>
+    <% if (s.about) { %><p class="lead" style="margin-top:28px;white-space:pre-line"><%= s.about %></p><% } %>
+  </div>
+</section>
+
+<section class="section--tight container">
+  <h2 class="display display-m" style="margin:48px 0 24px">Anunțuri</h2>
+  <% if (rows.length) { %>
+    <div class="grid-cards"><% rows.forEach(function (l) { %><%- include('partials/card', { l: l }) %><% }) %></div>
+    <% if (pages > 1) { %>
+      <nav class="pagination" aria-label="Paginare">
+        <% for (var p = 1; p <= pages; p++) { %><% if (p === page) { %><span aria-current="page"><%= p %></span><% } else { %><a href="?pagina=<%= p %>"><%= p %></a><% } %><% } %>
+      </nav>
+    <% } %>
+  <% } else { %>
+    <div class="empty"><h3>Niciun anunț activ</h3><p>Acest vânzător nu are anunțuri active momentan.</p></div>
+  <% } %>
+</section>
+
+<section class="section container container--narrow" id="recenzii" aria-labelledby="rev-title">
+  <h2 id="rev-title" class="display display-m" style="margin-bottom:12px">Recenzii</h2>
+  <% if (canReview) { %>
+    <form method="post" action="/vanzator/<%= s.id %>/recenzie" class="form-card stack" style="margin:20px 0 28px">
+      <input type="hidden" name="_csrf" value="<%= csrf %>">
+      <h3 style="font-weight:800;font-size:1.15rem"><%= myReview ? 'Actualizează recenzia ta' : 'Lasă o recenzie' %></h3>
+      <fieldset>
+        <legend>Câte stele îi dai?</legend>
+        <div class="star-input">
+          <% for (var i = 5; i >= 1; i--) { %>
+            <input type="radio" id="star<%= i %>" name="rating" value="<%= i %>" <%= myReview && myReview.rating === i ? 'checked' : '' %> required>
+            <label for="star<%= i %>" title="<%= i %> stele"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4 6.1 20.5l1.2-6.5L2.5 9.4l6.6-.9z"/></svg><span class="sr-only"><%= i %> stele</span></label>
+          <% } %>
+        </div>
+      </fieldset>
+      <div class="field"><label for="rev-body">Cum a fost experiența?</label><textarea class="textarea" id="rev-body" name="body" maxlength="800" style="min-height:100px" placeholder="Marfa a corespuns descrierii? A fost punctual?"><%= myReview ? myReview.body : '' %></textarea></div>
+      <button class="btn" type="submit" style="align-self:flex-start">Publică recenzia</button>
+    </form>
+  <% } else if (!user) { %>
+    <p class="muted">Ai cumpărat de la acest vânzător? <a href="/autentificare?next=<%= encodeURIComponent('/vanzator/' + s.id + '#recenzii') %>">Intră în cont</a> ca să lași o recenzie.</p>
+  <% } %>
+  <% if (reviews.length) { %>
+    <div>
+      <% reviews.forEach(function (rv) { %>
+        <article class="review">
+          <div class="review-head"><strong><%= rv.author_name %></strong><span class="muted" style="font-size:.85rem"><%= timeAgo(rv.created_at) %></span></div>
+          <%- include('partials/stars', { rating: rv.rating }) %>
+          <% if (rv.body) { %><p style="margin-top:8px"><%= rv.body %></p><% } %>
+        </article>
+      <% }) %>
+    </div>
+  <% } else { %>
+    <p class="muted" style="margin-top:12px">Acest vânzător nu are încă recenzii.</p>
+  <% } %>
+</section>
+<%- include('partials/foot') %>

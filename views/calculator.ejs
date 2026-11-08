@@ -1,0 +1,73 @@
+<%- include('partials/head') %>
+<section class="page-hero">
+  <div class="container" style="text-align:center">
+    <p class="eyebrow">Te ajutăm să calculezi</p>
+    <h1 class="display display-xl" style="margin-top:14px">Calculator materiale</h1>
+    <p class="lead" style="margin:16px auto 0">Răspunde la câteva întrebări și află cantitatea estimată. Apoi găsește materialele direct de la vânzători din județul tău.</p>
+  </div>
+</section>
+
+<section class="section on-dark" style="padding-top:48px">
+  <div class="container">
+    <form class="calc" id="calc" novalidate>
+      <div class="calc-progress"><span>Pasul <span data-step-num>1</span> din 5</span><div class="calc-bar" aria-hidden="true"><span data-bar></span></div></div>
+
+      <div class="calc-step" data-step="1">
+        <h2 class="display display-m">Ce lucrare faci?</h2>
+        <div class="calc-options" role="radiogroup" aria-label="Tipul lucrării">
+          <label class="calc-option"><input type="radio" name="work" value="bca" checked><span><i data-lucide="brick-wall"></i>Zidărie BCA<small>Pereți din blocuri BCA</small></span></label>
+          <label class="calc-option"><input type="radio" name="work" value="caramida"><span><i data-lucide="brick-wall"></i>Zidărie cărămidă<small>Blocuri ceramice tip Porotherm</small></span></label>
+          <label class="calc-option"><input type="radio" name="work" value="beton"><span><i data-lucide="package"></i>Turnare beton<small>Placă, fundație, șapă</small></span></label>
+          <label class="calc-option"><input type="radio" name="work" value="tencuiala"><span><i data-lucide="layers"></i>Tencuială<small>Pereți interiori sau exteriori</small></span></label>
+          <label class="calc-option"><input type="radio" name="work" value="gresie"><span><i data-lucide="layout-grid"></i>Gresie / faianță<small>Pardoseli și placări</small></span></label>
+          <label class="calc-option"><input type="radio" name="work" value="vopsea"><span><i data-lucide="paint-roller"></i>Vopsit<small>Lavabil interior sau exterior</small></span></label>
+          <label class="calc-option"><input type="radio" name="work" value="izolatie"><span><i data-lucide="house"></i>Izolație termică<small>Termosistem cu polistiren</small></span></label>
+        </div>
+      </div>
+
+      <div class="calc-step" data-step="2" hidden>
+        <h2 class="display display-m">Ce suprafață ai?</h2>
+        <div class="range-wrap">
+          <output class="range-value tnum" for="area" id="area-out"><span data-area-val>50</span> <small>mp</small></output>
+          <label for="area" class="sr-only">Suprafața în metri pătrați</label>
+          <input type="range" id="area" name="area" min="1" max="500" value="50" step="1">
+          <div class="range-scale" aria-hidden="true"><span>1 mp</span><span>250 mp</span><span>500 mp</span></div>
+        </div>
+        <div class="field" style="max-width:260px;margin-top:16px">
+          <label for="area-num">Sau scrie exact</label>
+          <div class="input-group"><input class="input" id="area-num" type="number" inputmode="decimal" min="1" max="10000" value="50"><span class="addon">mp</span></div>
+        </div>
+      </div>
+
+      <div class="calc-step" data-step="3" hidden>
+        <h2 class="display display-m" data-detail-title>Ce grosime?</h2>
+        <div class="choice-row" data-detail-options role="radiogroup" aria-label="Detalii lucrare"></div>
+        <p class="help" data-detail-help style="margin-top:14px"></p>
+      </div>
+
+      <div class="calc-step" data-step="4" hidden>
+        <h2 class="display display-m">În ce județ construiești?</h2>
+        <p class="muted" style="margin-bottom:18px">Îți arătăm anunțuri de la vânzători din apropiere.</p>
+        <div class="field" style="max-width:420px">
+          <label for="calc-county">Județ</label>
+          <select class="select" id="calc-county" name="county"><option value="">Toată țara</option><% counties.forEach(function (c) { %><option <%= user && user.county === c ? 'selected' : '' %>><%= c %></option><% }) %></select>
+        </div>
+      </div>
+
+      <div class="calc-step" data-step="5" hidden aria-live="polite">
+        <h2 class="display display-m">Îți trebuie aproximativ:</h2>
+        <div class="results" data-results></div>
+        <p class="help" style="margin-top:16px">Estimările includ o rezervă de 5–10% pentru pierderi. Consumul real depinde de produs și de execuție – verifică fișa tehnică a producătorului.</p>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:22px" data-result-links></div>
+      </div>
+
+      <div class="calc-nav">
+        <button class="btn btn--ghost" type="button" data-prev hidden><i data-lucide="arrow-left"></i> Înapoi</button>
+        <span></span>
+        <button class="btn btn--red" type="button" data-next>Continuă <i data-lucide="arrow-right"></i></button>
+        <button class="btn" type="button" data-restart hidden><i data-lucide="rotate-ccw"></i> Calculează din nou</button>
+      </div>
+    </form>
+  </div>
+</section>
+<%- include('partials/foot', { scripts: ['/js/calculator.js'] }) %>

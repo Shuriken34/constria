@@ -1,0 +1,54 @@
+<%- include('partials/head') %>
+<section class="page-hero">
+  <div class="container">
+    <nav aria-label="Breadcrumb"><ol class="breadcrumbs"><li><a href="/">Acasă</a></li><li aria-current="page">Cum funcționează</li></ol></nav>
+    <h1 class="display display-xl">Cum<br>funcționează</h1>
+    <p class="lead" style="margin-top:16px">Constria este un loc de întâlnire între cei care au materiale de construcții și cei care au nevoie de ele. Noi nu vindem nimic și nu luăm comision – vă punem doar în legătură.</p>
+  </div>
+</section>
+
+<section class="section on-dark">
+  <div class="container">
+    <p class="eyebrow">Pentru cumpărători</p>
+    <h2 class="display display-l" style="margin:14px 0 36px">Cumperi în 3 pași</h2>
+    <div class="steps">
+      <div class="step"><h3>Caută și filtrează</h3><p>Folosește căutarea și filtrele de județ, preț, stare (nou, surplus, folosit) și tip de vânzător. Salvează anunțurile care îți plac apăsând pe inimioară.</p></div>
+      <div class="step"><h3>Contactează vânzătorul</h3><p>Din pagina anunțului vezi telefonul, îi poți scrie pe WhatsApp sau poți trimite un mesaj prin Constria. Conversațiile le găsești în contul tău.</p></div>
+      <div class="step"><h3>Verifică, plătește, ridică</h3><p>Stabilește cu vânzătorul cantitatea, prețul final și transportul. Verifică marfa la predare și plătește direct vânzătorului.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <p class="eyebrow">Pentru vânzători</p>
+    <h2 class="display display-l" style="margin:14px 0 36px">Vinzi în 3 pași</h2>
+    <div class="steps">
+      <div class="step step--light"><h3>Creează cont</h3><p>Durează un minut. Alege cont de persoană fizică sau de firmă (cu CUI). Numărul de telefon apare în anunțuri ca să te poată suna cumpărătorii.</p></div>
+      <div class="step step--light"><h3>Publică anunțul</h3><p>Adaugă până la 8 fotografii, titlul, prețul pe unitate (buc, mp, palet, sac…), cantitatea disponibilă și modul de predare.</p></div>
+      <div class="step step--light"><h3>Răspunde și vinde</h3><p>Primești mesaje în cont și apeluri. După vânzare, marchează anunțul ca vândut. Îl poți reactiva oricând.</p></div>
+    </div>
+    <p style="margin-top:36px;display:flex;gap:10px;flex-wrap:wrap"><a class="btn btn--red" href="/adauga-anunt"><i data-lucide="plus"></i> Adaugă anunț</a><a class="btn btn--ghost" href="/anunturi">Vezi anunțurile</a></p>
+  </div>
+</section>
+
+<section class="section on-cream">
+  <div class="container">
+    <div class="split">
+      <div>
+        <p class="eyebrow">Transport</p>
+        <h2 class="display display-l" style="margin:14px 0 20px">Fiecare vânzător se ocupă de predare</h2>
+        <p class="lead">Pe fiecare anunț vezi clar dacă marfa se ridică personal, dacă vânzătorul livrează sau dacă sunt posibile ambele variante. Costul transportului se stabilește direct între voi.</p>
+      </div>
+      <figure><img src="<%= images.workers %>" alt="Echipă de constructori cu căști pe șantier" loading="lazy" width="1600" height="2000"></figure>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <h2 class="display display-l" style="margin-bottom:28px">Sfaturi de siguranță</h2>
+    <div class="tips"><% safetyTips.forEach(function (t) { %><div class="tip"><%= t %></div><% }) %></div>
+  </div>
+</section>
+<%- include('partials/foot') %>

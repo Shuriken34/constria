@@ -1,0 +1,183 @@
+<%- include('partials/head', { bodyClass: isOwner ? '' : 'has-sticky-actions' }) %>
+<% var cat = catMap[l.category]; var sellerName = l.seller_company || l.seller_name; %>
+<section class="page-hero" style="padding-bottom:20px">
+  <div class="container">
+    <nav aria-label="Breadcrumb"><ol class="breadcrumbs"><li><a href="/">Acasă</a></li><li><a href="/anunturi">Anunțuri</a></li><% if (cat) { %><li><a href="/categorie/<%= cat.slug %>"><%= cat.name %></a></li><% } %><li aria-current="page"><%= truncate(l.title, 40) %></li></ol></nav>
+  </div>
+</section>
+
+<div class="container">
+  <% if (isOwner || (user && user.role === 'admin')) { %>
+    <div class="owner-bar">
+      <span><strong><%= isOwner ? 'Acesta este anunțul tău.' : 'Vizualizare administrator.' %></strong> Stare: <%= { activ: 'activ', vandut: 'vândut', inactiv: 'inactiv', blocat: 'blocat de moderator' }[l.status] %> · <%= plural(l.views, 'vizualizare', 'vizualizări') %></span>
+      <span style="display:flex;gap:8px;flex-wrap:wrap">
+        <a class="btn btn--light btn--sm" href="/cont/anunturi/<%= l.id %>/editeaza"><i data-lucide="pencil"></i> Editează</a>
+        <% if (l.status === 'activ') { %>
+          <form method="post" action="/cont/anunturi/<%= l.id %>/status"><input type="hidden" name="_csrf" value="<%= csrf %>"><input type="hidden" name="status" value="vandut"><input type="hidden" name="back" value="listing"><button class="btn btn--light btn--sm" type="submit"><i data-lucide="check"></i> Marchează vândut</button></form>
+        <% } else if (l.status !== 'blocat') { %>
+          <form method="post" action="/cont/anunturi/<%= l.id %>/status"><input type="hidden" name="_csrf" value="<%= csrf %>"><input type="hidden" name="status" value="activ"><input type="hidden" name="back" value="listing"><button class="btn btn--light btn--sm" type="submit"><i data-lucide="rotate-ccw"></i> Reactivează</button></form>
+        <% } %>
+      </span>
+    </div>
+  <% } %>
+  <% if (l.status === 'vandut') { %><div class="notice notice--warn" style="margin-bottom:18px"><i data-lucide="info"></i><p>Acest anunț a fost marcat ca <strong>vândut</strong>. Vezi mai jos oferte similare.</p></div><% } %>
+
+  <div class="detail">
+    <div>
+      <div class="gallery" data-gallery>
+        <div class="gallery-main">
+          <img src="<%= imgSrc(imgs[0] && imgs[0].path) %>" alt="<%= l.title %> – fotografia 1" data-gallery-main width="1200" height="900">
+          <% if (imgs.length > 1) { %>
+            <button class="gallery-nav prev" type="button" data-gallery-prev aria-label="Fotografia anterioară"><i data-lucide="chevron-left"></i></button>
+            <button class="gallery-nav next" type="button" data-gallery-next aria-label="Fotografia următoare"><i data-lucide="chevron-right"></i></button>
+            <span class="gallery-count" aria-live="polite"><span data-gallery-index>1</span> / <%= imgs.length %></span>
+          <% } %>
+        </div>
+        <% if (imgs.length > 1) { %>
+          <div class="gallery-thumbs">
+            <% imgs.forEach(function (im, i) { %>
+              <button type="button" data-gallery-thumb="<%= i %>" data-src="<%= imgSrc(im.path) %>" aria-label="Arată fotografia <%= i + 1 %>" aria-current="<%= i === 0 ? 'true' : 'false' %>"><img src="<%= imgSrc(im.path).replace('w=1200','w=200') %>" alt="" loading="lazy"></button>
+            <% }) %>
+          </div>
+        <% } %>
+      </div>
+
+      <section class="detail-section" aria-labelledby="specs-title">
+        <h2 id="specs-title">Detalii</h2>
+        <dl class="specs">
+          <div class="spec"><dt>Categorie</dt><dd><%= cat ? cat.name : l.category %></dd></div>
+          <% if (cat && rentableGroups.includes(cat.group)) { %>
+            <div class="spec"><dt>Tip anunț</dt><dd><%= listingTypeMap[l.listing_type] ? listingTypeMap[l.listing_type].name : '' %></dd></div>
+            <% if (l.brand) { %><div class="spec"><dt>Marcă</dt><dd><%= l.brand %></dd></div><% } %>
+            <% if (l.model) { %><div class="spec"><dt>Model</dt><dd><%= l.model %></dd></div><% } %>
+            <% if (l.year) { %><div class="spec"><dt>An fabricație</dt><dd class="tnum"><%= l.year %></dd></div><% } %>
+            <% if (l.hours !== null && l.hours !== undefined) { %><div class="spec"><dt>Ore de funcționare</dt><dd class="tnum"><%= formatNumber(l.hours) %></dd></div><% } %>
+          <% } %>
+          <div class="spec"><dt>Stare</dt><dd><%= conditionMap[l.condition] ? conditionMap[l.condition].name : l.condition %></dd></div>
+          <% if (l.quantity) { %><div class="spec"><dt>Cantitate disponibilă</dt><dd class="tnum"><%= formatNumber(l.quantity) %> <%= unitLabel(l.unit) %></dd></div><% } %>
+          <div class="spec"><dt>Preț pe</dt><dd><%= unitMap[l.unit] ? unitMap[l.unit].name : l.unit %></dd></div>
+          <div class="spec"><dt>Predare</dt><dd><%= deliveryMap[l.delivery] ? deliveryMap[l.delivery].name : l.delivery %></dd></div>
+          <div class="spec"><dt>Locație</dt><dd><%= l.city %>, <%= l.county %></dd></div>
+        </dl>
+      </section>
+
+      <section class="detail-section" aria-labelledby="desc-title">
+        <h2 id="desc-title">Descriere</h2>
+        <div class="desc"><%= l.description %></div>
+      </section>
+
+      <section class="detail-section" aria-labelledby="transport-title">
+        <h2 id="transport-title">Transport</h2>
+        <div class="notice"><i data-lucide="truck"></i><div><p><strong><%= deliveryMap[l.delivery] ? deliveryMap[l.delivery].name : '' %>.</strong> <%= l.delivery_note || (l.listing_type === 'inchiriere' ? 'Transportul utilajului la și de la șantier se stabilește direct cu proprietarul.' : 'Detaliile și costul transportului se stabilesc direct cu vânzătorul.') %></p><p class="muted" style="margin-top:6px">Constria nu intermediază transportul. Fiecare vânzător se ocupă de predarea mărfii.</p></div></div>
+      </section>
+
+      <p class="muted" style="margin-top:28px;font-size:.88rem">ID anunț: <%= l.id %> · Publicat <%= formatDate(l.created_at) %> · <%= plural(l.views, 'vizualizare', 'vizualizări') %>
+        <% if (!isOwner) { %> · <button type="button" class="link-btn" data-open-dialog="report-dialog" style="background:none;border:0;padding:0;font-weight:700;text-decoration:underline;color:inherit;min-height:24px">Raportează anunțul</button><% } %>
+      </p>
+    </div>
+
+    <aside class="buy-box" aria-label="Preț și contact">
+      <div class="panel">
+        <div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-start">
+          <div class="card-tags" style="position:static">
+            <% if (l.featured) { %><span class="tag tag--red">Recomandat</span><% } %>
+            <% if (l.listing_type === 'inchiriere') { %><span class="tag tag--plum">De închiriat</span><% } %>
+            <span class="tag tag--outline"><%= conditionMap[l.condition] ? conditionMap[l.condition].name : '' %></span>
+          </div>
+          <button class="fav-btn" style="position:static;box-shadow:none;border:2px solid var(--line)" type="button" data-fav="<%= l.id %>" aria-pressed="<%= isFav ? 'true' : 'false' %>" aria-label="<%= isFav ? 'Șterge din favorite' : 'Salvează la favorite' %>"><i data-lucide="heart"></i></button>
+        </div>
+        <h1 style="margin-top:12px"><%= l.title %></h1>
+        <div class="price-big tnum"><%= formatPrice(l) %><% if (l.price_type !== 'gratuit') { %> <small>/ <%= unitLabel(l.unit) %></small><% } %></div>
+        <% if (l.price_type === 'negociabil') { %><p class="muted" style="font-weight:700;margin-top:4px">Preț negociabil</p><% } %>
+        <div class="meta-line">
+          <span><i data-lucide="map-pin"></i><%= l.city %>, <%= l.county %></span>
+          <span><i data-lucide="clock"></i><%= timeAgo(l.created_at) %></span>
+        </div>
+        <% if (!isOwner && l.status === 'activ') { %>
+          <div class="actions-col" id="contact">
+            <button class="btn btn--red btn--lg btn--block" type="button" data-phone="<%= l.id %>" data-masked="<%= maskPhone(l.seller_phone) %>"><i data-lucide="phone"></i> <span>Arată telefonul</span></button>
+            <div class="actions-row">
+              <a class="btn btn--ghost" href="<%= whatsappLink(l.seller_phone, 'Bună ziua! Vă scriu pentru anunțul „' + l.title + '” de pe Constria.') %>" target="_blank" rel="noopener"><i data-lucide="message-square"></i> WhatsApp</a>
+              <% if (conv) { %>
+                <a class="btn btn--ghost" href="/cont/mesaje/<%= conv.id %>"><i data-lucide="messages-square"></i> Conversația</a>
+              <% } else { %>
+                <a class="btn btn--ghost" href="#mesaj"><i data-lucide="mail"></i> Mesaj</a>
+              <% } %>
+            </div>
+          </div>
+        <% } %>
+      </div>
+
+      <div class="panel">
+        <a class="seller-row" href="/vanzator/<%= l.user_id %>">
+          <span class="avatar"><% if (l.seller_avatar) { %><img src="<%= imgSrc(l.seller_avatar) %>" alt=""><% } else { %><%= initials(sellerName) %><% } %></span>
+          <span>
+            <strong><%= sellerName %></strong>
+            <small><%= l.seller_type === 'firma' ? 'Firmă' : 'Persoană fizică' %> · pe Constria din <%= formatDate(l.seller_since).replace(/^\d+ /, '') %></small><br>
+            <%- include('partials/stars', { rating: seller.rating }) %> <small><%= seller.reviews ? '(' + seller.reviews + ')' : 'fără recenzii' %></small>
+          </span>
+        </a>
+        <% if (l.seller_verified) { %><p class="verified" style="margin-top:12px"><i data-lucide="badge-check"></i> Vânzător verificat de Constria</p><% } %>
+        <p style="margin-top:14px"><a class="link-arrow" href="/vanzator/<%= l.user_id %>">Toate anunțurile vânzătorului (<%= seller.active %>) <i data-lucide="arrow-right"></i></a></p>
+      </div>
+
+      <% if (!isOwner && l.status === 'activ') { %>
+        <div class="panel" id="mesaj">
+          <h2 style="font-family:var(--font-display);font-weight:400;text-transform:uppercase;font-size:1.7rem;margin-bottom:12px">Trimite un mesaj</h2>
+          <% if (user) { %>
+            <form method="post" action="/anunt/<%= l.id %>/mesaj" class="stack" style="gap:12px" data-loading>
+              <input type="hidden" name="_csrf" value="<%= csrf %>">
+              <label class="sr-only" for="msg-body">Mesajul tău</label>
+              <textarea class="textarea" id="msg-body" name="body" rows="4" required minlength="2" maxlength="2000" style="min-height:120px"><% if (l.listing_type === 'inchiriere') { %>Bună ziua! Utilajul este disponibil pentru închiriere? Aș avea nevoie de el pentru câteva zile.<% } else { %>Bună ziua! Mai este disponibil? Aș fi interesat de <%= l.quantity ? formatNumber(l.quantity) + ' ' + unitLabel(l.unit) : 'acest produs' %>.<% } %></textarea>
+              <div class="chips" aria-label="Mesaje rapide">
+                <button type="button" class="chip" data-quick="Mai este disponibil?">Mai e disponibil?</button>
+                <button type="button" class="chip" data-quick="Se poate negocia prețul?">Negociabil?</button>
+                <button type="button" class="chip" data-quick="Puteți livra în localitatea mea?">Livrați?</button>
+              </div>
+              <button class="btn btn--block" type="submit"><i data-lucide="send"></i> Trimite mesajul</button>
+            </form>
+          <% } else { %>
+            <p class="muted" style="margin-bottom:14px">Intră în cont ca să îi scrii vânzătorului și să păstrezi istoricul conversației.</p>
+            <a class="btn btn--block" href="/autentificare?next=<%= encodeURIComponent(listingUrl(l) + '#mesaj') %>">Intră în cont</a>
+          <% } %>
+        </div>
+      <% } %>
+
+      <div class="notice"><i data-lucide="shield-check"></i><p><strong>Cumpără în siguranță:</strong> verifică marfa înainte de plată și nu trimite avansuri. <a href="/siguranta">Sfaturi de siguranță</a></p></div>
+    </aside>
+  </div>
+
+  <% if (similar.length) { %>
+    <section class="section--tight" aria-labelledby="similar-title" style="padding-bottom:96px">
+      <div class="section-head" style="margin-bottom:24px">
+        <h2 id="similar-title" class="display display-m">Anunțuri similare</h2>
+        <% if (cat) { %><a class="link-arrow" href="/categorie/<%= cat.slug %>">Vezi categoria <i data-lucide="arrow-right"></i></a><% } %>
+      </div>
+      <div class="grid-cards">
+        <% similar.forEach(function (s) { %><%- include('partials/card', { l: s }) %><% }) %>
+      </div>
+    </section>
+  <% } %>
+</div>
+
+<% if (!isOwner && l.status === 'activ') { %>
+  <div class="sticky-actions">
+    <button class="btn btn--red" type="button" data-phone="<%= l.id %>" data-masked="<%= maskPhone(l.seller_phone) %>"><i data-lucide="phone"></i> <span>Sună</span></button>
+    <a class="btn" href="<%= conv ? '/cont/mesaje/' + conv.id : '#mesaj' %>"><i data-lucide="mail"></i> Mesaj</a>
+  </div>
+<% } %>
+
+<dialog id="report-dialog" aria-labelledby="report-title">
+  <div class="dialog-head"><h2 id="report-title">Raportează anunțul</h2><button class="icon-btn" type="button" data-close-dialog aria-label="Închide"><i data-lucide="x"></i></button></div>
+  <form method="post" action="/anunt/<%= l.id %>/raporteaza" class="dialog-body">
+    <input type="hidden" name="_csrf" value="<%= csrf %>">
+    <fieldset class="stack" style="gap:8px">
+      <legend>Care este problema?</legend>
+      <% reportReasons.forEach(function (r, i) { %><label class="check"><input type="radio" name="reason" value="<%= r %>" <%= i === 0 ? 'required' : '' %>> <%= r %></label><% }) %>
+    </fieldset>
+    <div class="field"><label for="rep-details">Detalii (opțional)</label><textarea class="textarea" id="rep-details" name="details" maxlength="1000" style="min-height:100px"></textarea></div>
+    <div style="display:flex;gap:10px;justify-content:flex-end"><button class="btn btn--ghost" type="button" data-close-dialog>Renunță</button><button class="btn btn--red" type="submit">Trimite raportarea</button></div>
+  </form>
+</dialog>
+
+<%- include('partials/foot') %>

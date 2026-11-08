@@ -1,0 +1,21 @@
+<article class="card<%= l.status === 'vandut' ? ' is-sold' : '' %>">
+  <div class="card-media">
+    <img src="<%= imgSrc(l.cover).replace('w=1200', 'w=600') %>" alt="" loading="lazy" width="600" height="450">
+    <div class="card-tags">
+      <% if (l.featured) { %><span class="tag tag--red">Recomandat</span><% } %>
+      <% if (l.listing_type === 'inchiriere') { %><span class="tag tag--plum">De închiriat</span><% } %>
+      <% if (l.price_type === 'gratuit') { %><span class="tag tag--green">Gratuit</span><% } else if (l.listing_type === 'inchiriere') { %><% } else if (l.condition === 'surplus') { %><span class="tag">Surplus</span><% } else if (l.condition === 'folosit') { %><span class="tag">Folosit</span><% } %>
+    </div>
+  </div>
+  <a class="card-link" href="<%= listingUrl(l) %>"><span class="sr-only"><%= l.title %></span></a>
+  <button class="fav-btn" type="button" data-fav="<%= l.id %>" aria-pressed="<%= l.is_fav ? 'true' : 'false' %>" aria-label="<%= l.is_fav ? 'Șterge din favorite' : 'Salvează la favorite' %>: <%= l.title %>"><i data-lucide="heart"></i></button>
+  <div class="card-body">
+    <div class="card-price tnum"><%= formatPrice(l) %><% if (l.price_type !== 'gratuit') { %> <small>/ <%= unitLabel(l.unit) %><%= l.price_type === 'negociabil' ? ' · neg.' : '' %></small><% } %></div>
+    <h3 class="card-title"><%= l.title %></h3>
+    <% if (l.year || l.hours) { %><p class="card-specs"><%= [l.year, l.hours ? formatNumber(l.hours) + ' ore' : null].filter(Boolean).join(' · ') %></p><% } %>
+    <div class="card-meta">
+      <span><i data-lucide="map-pin" aria-hidden="true"></i><%= l.city %>, <%= l.county %></span>
+      <span><%= timeAgo(l.created_at) %></span>
+    </div>
+  </div>
+</article>
