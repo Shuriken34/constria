@@ -1,27 +1,38 @@
-// Middleware: utilizator curent, CSRF, mesaje flash, protecție rute
+// Middleware: client Supabase, utilizator curent, CSRF, mesaje flash, protecție rute
 const crypto = require('node:crypto');
-const { get, run } = require('./db');
-const { unreadCount } = require('./models');
+const { createSupabase } = require('./supabase');
 const { token } = require('./helpers');
 
-function loadUser(req, res, next) {
+// Atașează clientul Supabase și încarcă utilizatorul autentificat (dacă există)
+async function loadUser(req, res, next) {
+  req.sb = createSupabase(req, res);
   res.locals.user = null;
   res.locals.unread = 0;
-  const uid = req.session && req.session.uid;
-  if (uid) {
-    const u = get('SELECT id, email, name, phone, county, city, account_type, company_name, cui, about, avatar, role, banned, verified, created_at FROM users WHERE id = ?', uid);
-    if (u && !u.banned) {
-      req.user = u;
-      res.locals.user = u;
-      res.locals.unread = unreadCount(u.id);
-      // actualizare "văzut ultima dată" cel mult o dată la 5 minute
-      if (!req.session.seen || Date.now() - req.session.seen > 300000) {
-        run("UPDATE users SET last_seen = datetime('now') WHERE id = ?", u.id);
-        req.session.seen = Date.now();
-      }
-    } else {
-      req.session.uid = null;
-    }
+  const { data, error } = await req.sb.auth.getClaims();
+  const claims = !error && data ? data.claims : null;
+  if (!claims || !claims.sub) return next();
+
+  const uid = claims.sub;
+  const [{ data: profile }, { data: contact }] = await Promise.all([
+    req.sb.from('profiles').select('*').eq('id', uid).maybeSingle(),
+    req.sb.from('profile_contacts').select('email, phone').eq('user_id', uid).maybeSingle(),
+  ]);
+  if (!profile || profile.banned) {
+    await req.sb.auth.signOut();
+    return next();
+  }
+  const role = claims.app_metadata && claims.app_metadata.role === 'admin' ? 'admin' : 'user';
+  req.user = { ...profile, email: (contact && contact.email) || claims.email, phone: contact ? contact.phone : null, role };
+  res.locals.user = req.user;
+
+  const { count } = await req.sb.from('messages').select('id', { count: 'exact', head: true })
+    .is('read_at', null).neq('sender_id', uid);
+  res.locals.unread = count || 0;
+
+  // „Văzut ultima dată” cel mult o dată la 5 minute
+  if (!req.session.seen || Date.now() - req.session.seen > 300000) {
+    req.session.seen = Date.now();
+    req.sb.from('profiles').update({ last_seen: new Date().toISOString() }).eq('id', uid).then(() => {}, () => {});
   }
   next();
 }
@@ -66,8 +77,11 @@ function flashLocals(req, res, next) {
 
 function requireAuth(req, res, next) {
   if (req.user) return next();
-  flash(req, 'info', 'Intră în cont pentru a continua.');
-  res.redirect('/autentificare?next=' + encodeURIComponent(req.originalUrl));
+  const wantsJson = (req.get('accept') || '').includes('application/json');
+  const back = req.method === 'GET' ? req.originalUrl : (req.get('referer') ? new URL(req.get('referer')).pathname : '/');
+  if (wantsJson) return res.status(401).json({ login: '/autentificare?next=' + encodeURIComponent(back) });
+  flash(req, 'info', 'Ai nevoie de un cont ca să continui. Intră în cont sau creează unul gratuit.');
+  res.redirect('/autentificare?next=' + encodeURIComponent(back));
 }
 
 function requireAdmin(req, res, next) {

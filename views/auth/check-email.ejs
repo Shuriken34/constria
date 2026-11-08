@@ -1,0 +1,11 @@
+<%- include('../partials/head') %>
+<section class="section">
+  <div class="container" style="max-width:560px;text-align:center">
+    <i data-lucide="mail-check" style="width:56px;height:56px;margin:0 auto 18px"></i>
+    <h1 class="display display-m">Verifică emailul</h1>
+    <p class="lead" style="margin:16px auto 24px">Ți-am trimis un link de confirmare la <strong><%= email %></strong>. Deschide-l ca să îți activezi contul, apoi poți publica anunțuri și trimite mesaje.</p>
+    <div class="notice" style="text-align:left"><i data-lucide="info"></i><p>Nu găsești emailul? Verifică dosarul Spam sau Promoții. Linkul este valabil 24 de ore.</p></div>
+    <p style="margin-top:24px"><a class="btn" href="/autentificare">Am confirmat, vreau să intru în cont</a></p>
+  </div>
+</section>
+<%- include('../partials/foot') %>

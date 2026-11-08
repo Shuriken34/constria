@@ -3,7 +3,7 @@
   <p class="eyebrow">Administrare</p>
   <h1 class="display display-l" style="margin-top:10px">Anunțuri</h1>
   <%- include('nav') %>
-  <form method="get" style="display:flex;gap:8px;margin-bottom:16px;max-width:520px"><label class="sr-only" for="aq">Caută</label><input class="input" id="aq" name="q" value="<%= q %>" placeholder="Titlu sau email vânzător"><button class="btn">Caută</button></form>
+  <form method="get" style="display:flex;gap:8px;margin-bottom:16px;max-width:520px"><label class="sr-only" for="aq">Caută</label><input class="input" id="aq" name="q" value="<%= q %>" placeholder="Titlul anunțului"><button class="btn">Caută</button></form>
   <div class="table-wrap"><table class="table">
     <thead><tr><th>ID</th><th>Titlu</th><th>Vânzător</th><th>Preț</th><th>Stare</th><th>Vizualizări</th><th>Creat</th><th>Acțiuni</th></tr></thead>
     <tbody>
@@ -11,7 +11,7 @@
         <tr>
           <td class="tnum"><%= l.id %></td>
           <td><a href="<%= listingUrl(l) %>"><%= truncate(l.title, 45) %></a><% if (l.featured) { %> <span class="tag tag--red">rec.</span><% } %></td>
-          <td><%= l.seller_name %><br><small class="muted"><%= l.seller_email %></small></td>
+          <td><a href="/vanzator/<%= l.user_id %>"><%= l.seller_company || l.seller_name %></a></td>
           <td class="tnum"><%= formatPrice(l) %></td>
           <td><span class="tag<%= l.status === 'blocat' ? ' tag--red' : l.status === 'activ' ? ' tag--green' : '' %>"><%= l.status %></span></td>
           <td class="tnum"><%= l.views %></td>

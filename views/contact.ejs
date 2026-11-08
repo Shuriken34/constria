@@ -15,6 +15,16 @@
         <div class="notice"><i data-lucide="help-circle"></i><p>Verifică și <a href="/intrebari-frecvente"><strong>întrebările frecvente</strong></a> – poate găsești răspunsul imediat.</p></div>
       </div>
     </div>
+    <% if (!user) { %>
+    <div class="form-card stack">
+      <h2>Ai nevoie de un cont</h2>
+      <p class="muted">Ca să ne trimiți un mesaj, intră în cont sau creează unul gratuit. Așa îți putem răspunde sigur și păstrăm platforma fără spam.</p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <a class="btn" href="/autentificare?next=/contact">Intră în cont</a>
+        <a class="btn btn--ghost" href="/inregistrare?next=/contact">Creează cont</a>
+      </div>
+    </div>
+    <% } else { %>
     <form class="form-card stack" method="post" action="/contact" novalidate data-loading>
       <input type="hidden" name="_csrf" value="<%= csrf %>">
       <%- include('partials/error-summary') %>
@@ -39,6 +49,7 @@
       </div>
       <button class="btn btn--lg" type="submit"><i data-lucide="send"></i> Trimite mesajul</button>
     </form>
+    <% } %>
   </div>
 </section>
 <%- include('partials/foot') %>

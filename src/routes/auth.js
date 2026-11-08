@@ -1,9 +1,7 @@
-// Autentificare și înregistrare
+// Autentificare cu Supabase Auth: intrare, înregistrare, confirmare email, resetare parolă
 const express = require('express');
-const bcrypt = require('bcryptjs');
-const { get, run } = require('../db');
 const { counties } = require('../data');
-const { flash, rateLimit } = require('../middleware');
+const { flash, rateLimit, requireAuth } = require('../middleware');
 
 const r = express.Router();
 const limiter = rateLimit({ windowMs: 10 * 60 * 1000, max: 20 });
@@ -11,24 +9,29 @@ const limiter = rateLimit({ windowMs: 10 * 60 * 1000, max: 20 });
 function safeNext(n) {
   return typeof n === 'string' && n.startsWith('/') && !n.startsWith('//') ? n : '/cont';
 }
+const siteUrl = (req) => (process.env.SITE_URL || `${req.protocol}://${req.get('host')}`).replace(/\/$/, '');
 
 r.get('/autentificare', (req, res) => {
   if (req.user) return res.redirect('/cont');
   res.render('auth/login', { title: 'Intră în cont', form: {}, error: null, next: safeNext(req.query.next) });
 });
 
-r.post('/autentificare', limiter, (req, res) => {
+r.post('/autentificare', limiter, async (req, res) => {
   const email = (req.body.email || '').trim().toLowerCase();
   const password = req.body.password || '';
   const next = safeNext(req.body.next);
-  const u = get('SELECT id, password_hash, banned FROM users WHERE email = ?', email);
-  if (!u || !bcrypt.compareSync(password, u.password_hash)) {
-    return res.status(401).render('auth/login', { title: 'Intră în cont', form: { email }, error: 'Emailul sau parola nu sunt corecte. Verifică datele și încearcă din nou.', next });
+  const { data, error } = await req.sb.auth.signInWithPassword({ email, password });
+  if (error) {
+    const msg = /not confirmed/i.test(error.message)
+      ? 'Adresa de email nu a fost încă confirmată. Deschide emailul de confirmare primit la înregistrare.'
+      : 'Emailul sau parola nu sunt corecte. Verifică datele și încearcă din nou.';
+    return res.status(401).render('auth/login', { title: 'Intră în cont', form: { email }, error: msg, next });
   }
-  if (u.banned) {
+  const { data: profile } = await req.sb.from('profiles').select('banned, name').eq('id', data.user.id).maybeSingle();
+  if (profile && profile.banned) {
+    await req.sb.auth.signOut();
     return res.status(403).render('auth/login', { title: 'Intră în cont', form: { email }, error: 'Contul tău a fost suspendat. Scrie-ne la pagina Contact pentru detalii.', next });
   }
-  req.session.uid = u.id;
   req.session.csrf = null; // regenerare token după autentificare
   flash(req, 'success', 'Bine ai revenit!');
   res.redirect(next);
@@ -39,7 +42,7 @@ r.get('/inregistrare', (req, res) => {
   res.render('auth/register', { title: 'Creează cont', form: { account_type: req.query.tip === 'firma' ? 'firma' : 'persoana' }, errors: {}, next: safeNext(req.query.next) });
 });
 
-r.post('/inregistrare', limiter, (req, res) => {
+r.post('/inregistrare', limiter, async (req, res) => {
   const b = req.body;
   const form = {
     name: (b.name || '').trim().slice(0, 80),
@@ -56,7 +59,6 @@ r.post('/inregistrare', limiter, (req, res) => {
   const errors = {};
   if (form.name.length < 2) errors.name = 'Scrie numele tău (minimum 2 caractere).';
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) errors.email = 'Adresa de email nu pare corectă (ex: nume@exemplu.ro).';
-  else if (get('SELECT 1 FROM users WHERE email = ?', form.email)) errors.email = 'Există deja un cont cu acest email. Încearcă să te autentifici.';
   if (form.phone.replace(/\D/g, '').length < 9) errors.phone = 'Numărul de telefon trebuie să aibă cel puțin 9 cifre (ex: 0722 123 456).';
   if (!form.county) errors.county = 'Alege județul.';
   if (form.city.length < 2) errors.city = 'Scrie localitatea.';
@@ -67,32 +69,85 @@ r.post('/inregistrare', limiter, (req, res) => {
   if ((b.password || '').length < 8) errors.password = 'Parola trebuie să aibă cel puțin 8 caractere.';
   else if (b.password !== b.password2) errors.password2 = 'Parolele nu coincid.';
   if (!form.terms) errors.terms = 'Trebuie să accepți termenii și condițiile.';
-
   if (Object.keys(errors).length) {
     return res.status(422).render('auth/register', { title: 'Creează cont', form, errors, next });
   }
-  const hash = bcrypt.hashSync(b.password, 10);
-  const info = run(
-    `INSERT INTO users (email, password_hash, name, phone, county, city, account_type, company_name, cui)
-     VALUES (?,?,?,?,?,?,?,?,?)`,
-    form.email, hash, form.name, form.phone, form.county, form.city, form.account_type,
-    form.account_type === 'firma' ? form.company_name : null, form.account_type === 'firma' ? form.cui : null,
-  );
-  req.session.uid = Number(info.lastInsertRowid);
-  req.session.csrf = null;
-  flash(req, 'success', `Bine ai venit pe Constria, ${form.name.split(' ')[0]}! Contul tău este gata.`);
-  res.redirect(next === '/cont' ? '/cont' : next);
+
+  const { data, error } = await req.sb.auth.signUp({
+    email: form.email,
+    password: b.password,
+    options: {
+      emailRedirectTo: `${siteUrl(req)}/auth/confirm?next=${encodeURIComponent(next)}`,
+      // Folosite doar ca valori inițiale ale profilului (trigger în baza de date)
+      data: {
+        name: form.name, phone: form.phone, county: form.county, city: form.city, account_type: form.account_type,
+        company_name: form.account_type === 'firma' ? form.company_name : null,
+        cui: form.account_type === 'firma' ? form.cui : null,
+      },
+    },
+  });
+  if (error) {
+    if (/already registered|already exists/i.test(error.message)) errors.email = 'Există deja un cont cu acest email. Încearcă să te autentifici.';
+    else if (/password/i.test(error.message)) errors.password = 'Parola este prea slabă. Folosește cel puțin 8 caractere, cu litere și cifre.';
+    else if (/rate limit|too many/i.test(error.message)) errors.email = 'Au fost trimise prea multe emailuri de confirmare. Încearcă din nou peste câteva minute.';
+    else errors.email = 'Nu am putut crea contul: ' + error.message;
+    return res.status(422).render('auth/register', { title: 'Creează cont', form, errors, next });
+  }
+  if (data.session) {
+    req.session.csrf = null;
+    flash(req, 'success', `Bine ai venit pe Constria, ${form.name.split(' ')[0]}! Contul tău este gata.`);
+    return res.redirect(next);
+  }
+  // Confirmarea emailului este activă: utilizatorul primește un link
+  res.render('auth/check-email', { title: 'Verifică emailul', email: form.email });
 });
 
-r.post('/deconectare', (req, res) => {
+// Linkurile din emailuri (confirmare cont, resetare parolă) ajung aici
+r.get('/auth/confirm', async (req, res) => {
+  const next = safeNext(req.query.next);
+  let error = null;
+  if (req.query.code) {
+    ({ error } = await req.sb.auth.exchangeCodeForSession(String(req.query.code)));
+  } else if (req.query.token_hash && req.query.type) {
+    ({ error } = await req.sb.auth.verifyOtp({ token_hash: String(req.query.token_hash), type: String(req.query.type) }));
+  } else {
+    error = new Error('missing code');
+  }
+  if (error) {
+    flash(req, 'error', 'Linkul a expirat sau a fost deja folosit. Cere unul nou.');
+    return res.redirect('/autentificare');
+  }
+  req.session.csrf = null;
+  flash(req, 'success', next === '/cont/parola-noua' ? 'Alege o parolă nouă pentru contul tău.' : 'Adresa de email a fost confirmată. Bine ai venit!');
+  res.redirect(next);
+});
+
+r.post('/deconectare', async (req, res) => {
+  await req.sb.auth.signOut();
   req.session = null;
   res.redirect('/');
 });
 
 r.get('/parola-uitata', (req, res) => res.render('auth/forgot', { title: 'Ai uitat parola?', sent: false }));
-r.post('/parola-uitata', limiter, (req, res) => {
-  // Fără serviciu de email configurat: confirmăm generic, fără a dezvălui dacă emailul există
+r.post('/parola-uitata', limiter, async (req, res) => {
+  const email = (req.body.email || '').trim().toLowerCase();
+  if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    // Răspuns generic, fără a dezvălui dacă emailul există
+    await req.sb.auth.resetPasswordForEmail(email, { redirectTo: `${siteUrl(req)}/auth/confirm?next=/cont/parola-noua` });
+  }
   res.render('auth/forgot', { title: 'Ai uitat parola?', sent: true });
+});
+
+r.get('/cont/parola-noua', requireAuth, (req, res) => res.render('auth/new-password', { title: 'Parolă nouă', error: null }));
+r.post('/cont/parola-noua', requireAuth, async (req, res) => {
+  const p = req.body.password || '';
+  if (p.length < 8 || p !== req.body.password2) {
+    return res.status(422).render('auth/new-password', { title: 'Parolă nouă', error: p.length < 8 ? 'Parola trebuie să aibă cel puțin 8 caractere.' : 'Parolele nu coincid.' });
+  }
+  const { error } = await req.sb.auth.updateUser({ password: p });
+  if (error) return res.status(422).render('auth/new-password', { title: 'Parolă nouă', error: 'Parola nu a putut fi schimbată: ' + error.message });
+  flash(req, 'success', 'Parola a fost schimbată.');
+  res.redirect('/cont');
 });
 
 module.exports = r;

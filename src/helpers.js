@@ -34,10 +34,12 @@ function unitLabel(id) {
   return { buc: 'buc', mp: 'mp', mc: 'mc', ml: 'ml', kg: 'kg', tona: 'tonă', sac: 'sac', palet: 'palet', set: 'lot', litru: 'l', ora: 'oră', zi: 'zi', saptamana: 'săpt.', luna: 'lună' }[id] || u.name;
 }
 
-// Datele din SQLite sunt în UTC, format "YYYY-MM-DD HH:MM:SS"
+// Datele vin din Postgres ca ISO 8601 cu fus orar (ex. 2026-11-08T10:00:00.123+00:00)
 function parseDate(s) {
   if (!s) return new Date();
-  return new Date(s.replace(' ', 'T') + 'Z');
+  if (s instanceof Date) return s;
+  const str = String(s);
+  return new Date(/[zZ]|[+-]\d\d:?\d\d$/.test(str) ? str : str.replace(' ', 'T') + 'Z');
 }
 
 function timeAgo(s) {

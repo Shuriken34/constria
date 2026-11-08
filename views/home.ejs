@@ -285,7 +285,7 @@
     <div class="sellers">
       <% sellers.forEach(function (s) { %>
         <a class="seller-card reveal" href="/vanzator/<%= s.id %>">
-          <span class="avatar avatar--lg"><% if (s.avatar) { %><img src="<%= imgSrc(s.avatar) %>" alt=""><% } else { %><%= initials(s.company_name || s.name) %><% } %></span>
+          <span class="avatar avatar--lg"><% if (s.avatar_url) { %><img src="<%= imgSrc(s.avatar_url) %>" alt=""><% } else { %><%= initials(s.company_name || s.name) %><% } %></span>
           <strong><%= s.company_name || s.name %></strong>
           <% if (s.verified) { %><span class="verified"><i data-lucide="badge-check"></i> Verificat</span><% } %>
           <%- include('partials/stars', { rating: s.rating }) %>

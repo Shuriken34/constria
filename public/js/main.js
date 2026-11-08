@@ -4,7 +4,7 @@
   const $ = (s, c = document) => c.querySelector(s);
   const $$ = (s, c = document) => Array.from(c.querySelectorAll(s));
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const csrf = ($('input[name="_csrf"]') || {}).value || '';
+  const csrf = ($('meta[name="csrf-token"]') || {}).content || ($('input[name="_csrf"]') || {}).value || '';
 
   function icons() { if (window.lucide) window.lucide.createIcons({ attrs: { 'stroke-width': 2, 'aria-hidden': 'true' } }); }
   icons();
@@ -155,7 +155,7 @@
     b.setAttribute('aria-pressed', String(!was));
     try {
       const r = await fetch('/favorite/' + b.dataset.fav, { method: 'POST', headers: { Accept: 'application/json', 'X-CSRF-Token': csrf } });
-      if (r.status === 401) { location.href = '/autentificare?next=' + encodeURIComponent(location.pathname); return; }
+      if (r.status === 401) { location.href = '/autentificare?next=' + encodeURIComponent(location.pathname + location.search); return; }
       if (!r.ok) throw new Error();
       const d = await r.json();
       $$('[data-fav="' + b.dataset.fav + '"]').forEach((x) => {
@@ -378,7 +378,7 @@
     let last = Number(thread.dataset.last) || 0;
     const scrollDown = () => { thread.scrollTop = thread.scrollHeight; };
     scrollDown();
-    const fmt = (s) => new Date(s.replace(' ', 'T') + 'Z').toLocaleTimeString('ro-RO', { hour: '2-digit', minute: '2-digit' });
+    const fmt = (s) => new Date(s).toLocaleTimeString('ro-RO', { hour: '2-digit', minute: '2-digit' });
     const add = (m) => {
       if (m.id <= last) return;
       last = m.id;

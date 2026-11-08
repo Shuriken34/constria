@@ -9,12 +9,12 @@
       <input type="hidden" name="_csrf" value="<%= csrf %>">
       <div><h2>Profil</h2><p class="muted">Aceste date apar pe anunțurile tale și pe profilul public.</p></div>
       <div style="display:flex;gap:18px;align-items:center;flex-wrap:wrap">
-        <span class="avatar avatar--lg"><% if (form.avatar) { %><img src="<%= imgSrc(form.avatar) %>" alt="Fotografia de profil"><% } else { %><%= initials(form.company_name || form.name) %><% } %></span>
+        <span class="avatar avatar--lg"><% if (form.avatar_url) { %><img src="<%= imgSrc(form.avatar_url) %>" alt="Fotografia de profil"><% } else { %><%= initials(form.company_name || form.name) %><% } %></span>
         <div class="field">
           <label for="f-avatar">Fotografie sau logo</label>
           <input id="f-avatar" name="avatar" type="file" accept="image/jpeg,image/png,image/webp" <%- inv('avatar') %>>
           <%- include('../partials/field-error', { name: 'avatar' }) %>
-          <% if (form.avatar) { %><label class="check" style="margin-top:6px"><input type="checkbox" name="remove_avatar" value="1"> Șterge fotografia</label><% } %>
+          <% if (form.avatar_url) { %><label class="check" style="margin-top:6px"><input type="checkbox" name="remove_avatar" value="1"> Șterge fotografia</label><% } %>
         </div>
       </div>
       <fieldset>

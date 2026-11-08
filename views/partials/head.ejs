@@ -6,6 +6,7 @@
   <title><%= title ? title + ' | Constria' : 'Constria – Materiale de construcții de la oameni reali' %></title>
   <meta name="description" content="<%= description %>">
   <meta name="theme-color" content="#4a002a">
+  <meta name="csrf-token" content="<%= csrf %>">
   <meta property="og:site_name" content="Constria">
   <meta property="og:title" content="<%= title || 'Constria' %>">
   <meta property="og:description" content="<%= description %>">
@@ -40,7 +41,7 @@
       <% if (user) { %>
         <a class="icon-btn only-desktop" href="/cont/favorite" aria-label="Anunțuri salvate"><i data-lucide="heart"></i></a>
         <a class="icon-btn" href="/cont/mesaje" aria-label="Mesaje<%= unread ? ', ' + unread + ' necitite' : '' %>"><i data-lucide="message-circle"></i><% if (unread) { %><span class="badge-dot" aria-hidden="true"><%= unread > 9 ? '9+' : unread %></span><% } %></a>
-        <a class="icon-btn only-desktop" href="/cont" aria-label="Contul meu"><span class="avatar avatar--xs"><% if (user.avatar) { %><img src="<%= imgSrc(user.avatar) %>" alt=""><% } else { %><%= initials(user.name) %><% } %></span></a>
+        <a class="icon-btn only-desktop" href="/cont" aria-label="Contul meu"><span class="avatar avatar--xs"><% if (user.avatar_url) { %><img src="<%= imgSrc(user.avatar_url) %>" alt=""><% } else { %><%= initials(user.name) %><% } %></span></a>
       <% } else { %>
         <a class="header-link only-desktop" href="/autentificare">Intră în cont</a>
       <% } %>

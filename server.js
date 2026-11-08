@@ -1,6 +1,11 @@
 // Constria - server principal
 const path = require('node:path');
 const fs = require('node:fs');
+
+// Variabilele din .env (Node 21.7+ le citește nativ)
+const envFile = path.join(__dirname, '.env');
+if (fs.existsSync(envFile)) process.loadEnvFile(envFile);
+
 const crypto = require('node:crypto');
 const express = require('express');
 const cookieSession = require('cookie-session');
@@ -81,14 +86,9 @@ app.use((req, res) => {
 
 // eslint-disable-next-line no-unused-vars
 app.use((err, req, res, next) => {
-  console.error(err);
+  console.error(err.supabase || err);
+  if (res.headersSent) return next(err);
   res.status(500).render('error', { title: 'Eroare', code: 500, message: 'A apărut o eroare neașteptată. Încearcă din nou în câteva momente.' });
 });
-
-// Populează automat baza de date la prima pornire
-const { get } = require('./src/db');
-if (get('SELECT COUNT(*) AS n FROM users').n === 0) {
-  require('./src/seed').seed();
-}
 
 app.listen(PORT, () => console.log(`Constria rulează pe http://localhost:${PORT}`));

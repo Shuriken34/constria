@@ -1,80 +1,90 @@
 # Constria
 
-Piața online pentru cumpărarea și vânzarea materialelor de construcții în România (model tip OLX).
+Piața online pentru cumpărarea, vânzarea și închirierea de materiale, utilaje și scule de construcții în România (model tip OLX).
 Cumpărătorii contactează direct vânzătorul (telefon, WhatsApp sau mesaje în platformă), iar fiecare vânzător se ocupă de transport.
+
+**Tehnologii:** Node.js + Express + EJS, cu **Supabase** pentru baza de date (Postgres), conturi (Supabase Auth) și fotografii (Supabase Storage).
 
 ## Pornire
 
-Necesită **Node.js 22.13+** (folosește baza de date SQLite inclusă în Node, fără instalări suplimentare).
+Necesită **Node.js 22.13+**.
 
-```bash
-npm install
-npm start
+1. Copiază `.env.example` în `.env` și completează valorile din Supabase (Project Settings → API Keys):
+
+   ```
+   NEXT_PUBLIC_SUPABASE_URL=https://<project-ref>.supabase.co
+   NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=sb_publishable_...
+   ```
+
+   Cheia *publishable* este publică prin design – securitatea vine din regulile RLS din baza de date. **Nu pune niciodată cheia secretă (`sb_secret_...`) în proiect.**
+
+2. Instalează și pornește:
+
+   ```bash
+   npm install
+   npm start
+   ```
+
+3. Deschide http://localhost:3000.
+
+## Conturi și reguli de acces
+
+- Oricine poate **naviga, căuta și vedea anunțuri** fără cont.
+- **Toate formularele cer cont**: publicare anunț, mesaje, favorite, recenzii, raportări și formularul de contact.
+- Conturile sunt gestionate de **Supabase Auth** (înregistrare cu email + parolă, confirmare email, resetare parolă).
+- Regulile **RLS** din Postgres garantează că fiecare utilizator își poate modifica doar propriile anunțuri, vede doar propriile mesaje și favorite, iar telefonul unui vânzător se afișează doar pentru anunțurile active.
+
+### Setări necesare în panoul Supabase
+
+1. **Authentication → URL Configuration**
+   - *Site URL*: adresa site-ului (local: `http://localhost:3000`, în producție: `https://domeniul-tau.ro`)
+   - *Redirect URLs*: adaugă `http://localhost:3000/auth/confirm` și `https://domeniul-tau.ro/auth/confirm`
+2. **Authentication → Emails / SMTP**: serviciul de email inclus în Supabase trimite doar câteva emailuri pe oră. Înainte de lansare configurează un SMTP propriu (ex. Resend, Brevo, Amazon SES), altfel înregistrările și resetările de parolă se vor bloca.
+
+### Cont de administrator
+
+Creează-ți un cont normal pe site, apoi rulează în **Supabase → SQL Editor** (înlocuiește emailul):
+
+```sql
+update auth.users
+set raw_app_meta_data = raw_app_meta_data || '{"role":"admin"}'::jsonb
+where email = 'emailul-tau@exemplu.ro';
 ```
 
-Deschide http://localhost:3000. La prima pornire site-ul pornește **gol**: doar contul de administrator și cele 3 ghiduri din blog. Primele anunțuri vin de la utilizatori reali.
-
-Resetare la site gol (șterge TOATE anunțurile, conturile și mesajele):
-
-```bash
-npm run seed
-```
-
-Date demonstrative fictive, **doar pentru testare locală** (nu le folosi pe serverul public – numerele de telefon și CUI-urile sunt inventate și pot aparține unor persoane reale):
-
-```bash
-npm run seed:demo
-```
-
-## Conturi
-
-| Rol | Email | Parolă |
-|---|---|---|
-| Administrator | admin@constria.ro | `Constria2026!` (sau valoarea din `ADMIN_PASSWORD`) |
-
-Doar cu `npm run seed:demo`: conturi fictive precum contact@depozitfloresti.ro sau gabriel.s@exemplu.ro, toate cu parola `demo12345`. **Schimbă parola de administrator înainte de lansare.**
+Ieși din cont și intră din nou: în meniul contului apare **Administrare** (moderare anunțuri, utilizatori, raportări și mesaje de contact).
 
 ## Funcționalități
 
-- **Trei secțiuni**: Materiale de construcții (`/materiale`), Utilaje și echipamente (`/utilaje` – excavatoare, miniutilaje, macarale și nacele, basculante, echipamente pentru beton, compactoare, generatoare, schele) și Scule și unelte (`/scule` – scule electrice, cu acumulator, manuale, măsură și trasare, echipamente de protecție, accesorii, scări).
+- **Trei secțiuni**: Materiale de construcții (`/materiale`), Utilaje și echipamente (`/utilaje`) și Scule și unelte (`/scule`).
 - **Vânzare sau închiriere** pentru utilaje și scule, cu preț pe oră / zi / săptămână / lună, plus marcă, model, an fabricație și (la utilaje) ore de funcționare.
-- **Video în spatele titlului principal**: clipuri gratuite de pe Pexels cu utilaje, scule și materiale (lista în `heroVideos` din `src/data.js`), rulate pe rând cu tranziție, cu buton de pauză; nu pornesc automat dacă vizitatorul a ales „mișcare redusă”. Pentru producție, găzduiește clipurile proprii (ex. în `public/video/`) și actualizează lista.
-
-- Pagină principală în stilul de referință: titluri uriașe, scenă hero în straturi cu paralaxă, text care se colorează la derulare, imagini duotone, beneficii numerotate, bandă derulantă.
-- Anunțuri: căutare (fără diacritice), filtre (categorie, județ, localitate, preț, stare, tip vânzător, livrare, gratuit), sortare, paginare.
-- Pagina anunțului: galerie, detalii, afișare telefon la cerere, WhatsApp, mesaje, favorite, raportare, anunțuri similare.
+- **Video în spatele titlului principal**: clipuri gratuite de pe Pexels (lista în `heroVideos` din `src/data.js`), cu buton de pauză; nu pornesc automat dacă vizitatorul a ales „mișcare redusă”.
+- Anunțuri: căutare (fără diacritice), filtre, sortare, paginare.
+- Pagina anunțului: galerie, detalii, telefon la cerere, WhatsApp, mesaje, favorite, raportare, anunțuri similare.
 - Conturi persoană fizică / firmă (CUI), profil public cu recenzii.
-- Adăugare / editare anunț cu până la 8 fotografii (validare tip real al fișierului), ciornă salvată automat, marcare ca vândut, dezactivare, ștergere.
+- Până la 8 fotografii pe anunț, salvate în Supabase Storage (fiecare utilizator are folderul lui).
 - Mesagerie între cumpărător și vânzător, cu actualizare automată și număr de mesaje necitite.
-- Calculator de materiale (BCA, cărămidă, beton, tencuială, gresie, vopsea, izolație) cu legătură spre anunțuri din județ.
-- Blog / ghiduri, Întrebări frecvente, Cum funcționează, Siguranță, Despre noi, Contact, Termeni, Confidențialitate.
-- Panou de administrare: raportări, mesaje de contact, blocare/promovare anunțuri, suspendare/verificare utilizatori.
-- Securitate: parole bcrypt, protecție CSRF, limitarea încercărilor de autentificare, cookie de sesiune httpOnly.
+- Calculator de materiale, blog / ghiduri, Întrebări frecvente, Contact, Termeni, Confidențialitate.
+- Ștergerea contului elimină și anunțurile, mesajele și fotografiile utilizatorului.
 
 ## Structură
 
 ```
-server.js            pornire Express, middleware
-src/data.js          categorii, județe, unități, imagini
-src/db.js            schema SQLite
-src/models.js        interogări
-src/routes/          rute publice, autentificare, cont, administrare
-src/seed.js          date demonstrative
-views/               șabloane EJS (în limba română)
-public/css/style.css sistemul vizual (culori, tipografie, componente)
-public/js/           interacțiuni, animații GSAP, calculator
+server.js              pornire Express, middleware
+src/supabase.js        client Supabase per cerere (@supabase/ssr, sesiune în cookie)
+src/middleware.js      utilizator curent, CSRF, protecție rute
+src/models.js          interogări Supabase
+src/upload.js          încărcare imagini în Supabase Storage
+src/routes/            rute publice, autentificare, cont, administrare
+src/data.js            categorii, județe, unități, imagini
+views/                 șabloane EJS (în limba română)
+public/                CSS, JavaScript, imagini
 ```
 
-## Personalizare rapidă
-
-- **Culori și fonturi**: variabilele din începutul fișierului `public/css/style.css`.
-- **Logo**: `views/partials/logo.ejs` și `public/img/favicon.svg`.
-- **Categorii**: `src/data.js`.
-- **Imagini**: momentan imagini stoc de pe Unsplash. Înlocuiește-le cu fotografii proprii în `src/data.js`.
+Schema bazei de date (tabele, reguli RLS, funcții și bucket-ul de fotografii) este creată prin migrațiile din proiectul Supabase.
 
 ## Înainte de lansare
 
-- Setează `NODE_ENV=production`, `SESSION_SECRET` și `ADMIN_PASSWORD`.
-- Configurează un serviciu de email pentru resetarea parolei (acum pagina doar confirmă cererea).
+- Setează `NODE_ENV=production`, `SESSION_SECRET` și `SITE_URL` (ex. `https://constria.ro`).
+- Configurează SMTP propriu și URL-urile de redirecționare în Supabase (vezi mai sus).
 - Revizuiește Termenii și Politica de confidențialitate cu un jurist.
-- Rulează în spatele HTTPS (ex. Nginx, Render, Railway, un VPS).
+- Rulează în spatele HTTPS.
