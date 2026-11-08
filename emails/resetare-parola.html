@@ -1,0 +1,122 @@
+<!--
+  Constria – email de resetare a parolei (Supabase → Authentication → Email Templates → Reset password)
+  Subiect recomandat: Resetarea parolei – Constria
+  Variabile Supabase folosite: {{ .SiteURL }}, {{ .TokenHash }}, {{ .Email }}, {{ .Data.name }}
+-->
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>Resetarea parolei – Constria</title>
+</head>
+<body style="margin:0;padding:0;background-color:#f6e1ce;-webkit-text-size-adjust:100%;">
+  <!-- Text de previzualizare (apare lângă subiect în căsuța de email) -->
+  <div style="display:none;max-height:0;overflow:hidden;opacity:0;color:#f6e1ce;">
+    Ați solicitat resetarea parolei contului Constria. Alegeți o parolă nouă.
+  </div>
+
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f6e1ce;">
+    <tr>
+      <td align="center" style="padding:32px 16px;">
+
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:560px;background-color:#fff3e4;border-radius:16px;overflow:hidden;">
+
+          <!-- Antet -->
+          <tr>
+            <td style="background-color:#4a002a;padding:28px 32px;" align="left">
+              <span style="font-family:Impact,'Arial Narrow Bold','Arial Narrow',Arial,sans-serif;font-size:30px;line-height:1;letter-spacing:1px;color:#f6e1ce;text-transform:uppercase;">CONSTR</span><span style="font-family:Impact,'Arial Narrow Bold','Arial Narrow',Arial,sans-serif;font-size:30px;line-height:1;letter-spacing:1px;color:#f00037;text-transform:uppercase;">IA</span>
+              <div style="font-family:Arial,Helvetica,sans-serif;font-size:13px;color:#e6c3a5;margin-top:6px;">Materiale, utilaje și scule de construcții</div>
+            </td>
+          </tr>
+
+          <!-- Conținut -->
+          <tr>
+            <td style="padding:36px 32px 8px 32px;font-family:Arial,Helvetica,sans-serif;color:#4a002a;">
+              <h1 style="margin:0 0 20px 0;font-size:24px;line-height:1.3;font-weight:bold;color:#4a002a;">Resetarea parolei</h1>
+              <p style="margin:0 0 16px 0;font-size:16px;line-height:1.6;">Bună ziua{{ if .Data.name }}, {{ .Data.name }}{{ end }},</p>
+              <p style="margin:0 0 16px 0;font-size:16px;line-height:1.6;">Am primit o solicitare de resetare a parolei pentru contul <strong>Constria</strong> asociat adresei <strong>{{ .Email }}</strong>. Pentru a alege o parolă nouă, vă rugăm să apăsați butonul de mai jos.</p>
+            </td>
+          </tr>
+
+          <!-- Buton -->
+          <tr>
+            <td align="center" style="padding:16px 32px 8px 32px;">
+              <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td align="center" bgcolor="#c8002e" style="border-radius:999px;">
+                    <a href="{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=recovery&next=/cont/parola-noua"
+                       target="_blank"
+                       style="display:inline-block;padding:16px 36px;font-family:Arial,Helvetica,sans-serif;font-size:16px;font-weight:bold;color:#ffffff;text-decoration:none;border-radius:999px;">
+                      Aleg o parolă nouă
+                    </a>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <tr>
+            <td style="padding:12px 32px 0 32px;font-family:Arial,Helvetica,sans-serif;color:#6e3a55;" align="center">
+              <p style="margin:0;font-size:13px;line-height:1.6;">Din motive de securitate, linkul poate fi folosit o singură dată și este valabil o perioadă limitată.</p>
+            </td>
+          </tr>
+
+          <!-- Sfaturi -->
+          <tr>
+            <td style="padding:28px 32px 8px 32px;font-family:Arial,Helvetica,sans-serif;color:#4a002a;">
+              <p style="margin:0 0 10px 0;font-size:16px;line-height:1.6;font-weight:bold;">Câteva recomandări pentru noua parolă:</p>
+              <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+                <tr><td valign="top" style="padding:0 10px 8px 0;font-size:16px;line-height:1.6;color:#c8002e;">&#10003;</td><td style="padding:0 0 8px 0;font-size:16px;line-height:1.6;">folosiți cel puțin 8 caractere, cu litere și cifre;</td></tr>
+                <tr><td valign="top" style="padding:0 10px 8px 0;font-size:16px;line-height:1.6;color:#c8002e;">&#10003;</td><td style="padding:0 0 8px 0;font-size:16px;line-height:1.6;">nu folosiți aceeași parolă pe alte site-uri;</td></tr>
+                <tr><td valign="top" style="padding:0 10px 8px 0;font-size:16px;line-height:1.6;color:#c8002e;">&#10003;</td><td style="padding:0 0 8px 0;font-size:16px;line-height:1.6;">nu comunicați parola nimănui, nici echipei Constria.</td></tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Link de rezervă -->
+          <tr>
+            <td style="padding:20px 32px 8px 32px;font-family:Arial,Helvetica,sans-serif;color:#6e3a55;">
+              <p style="margin:0 0 8px 0;font-size:14px;line-height:1.6;">Dacă butonul nu funcționează, copiați adresa de mai jos și lipiți-o în browser:</p>
+              <p style="margin:0;font-size:13px;line-height:1.5;word-break:break-all;">
+                <a href="{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=recovery&next=/cont/parola-noua" target="_blank" style="color:#4a002a;text-decoration:underline;">{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&amp;type=recovery&amp;next=/cont/parola-noua</a>
+              </p>
+            </td>
+          </tr>
+
+          <!-- Notă de securitate -->
+          <tr>
+            <td style="padding:20px 32px 8px 32px;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f6e1ce;border-radius:12px;">
+                <tr>
+                  <td style="padding:14px 16px;font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:1.6;color:#4a002a;">
+                    Nu ați solicitat dumneavoastră resetarea parolei? Puteți ignora acest mesaj în siguranță. Parola actuală rămâne neschimbată, iar contul dumneavoastră este în continuare protejat.
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Semnătură -->
+          <tr>
+            <td style="padding:24px 32px 32px 32px;font-family:Arial,Helvetica,sans-serif;color:#4a002a;">
+              <p style="margin:0;font-size:16px;line-height:1.6;">Cu stimă,<br><strong>Echipa Constria</strong></p>
+            </td>
+          </tr>
+
+          <!-- Subsol -->
+          <tr>
+            <td style="background-color:#4a002a;padding:20px 32px;font-family:Arial,Helvetica,sans-serif;color:#e6c3a5;" align="center">
+              <p style="margin:0 0 6px 0;font-size:12px;line-height:1.6;">Acest mesaj a fost trimis automat către {{ .Email }}. Vă rugăm să nu răspundeți la acest email.</p>
+              <p style="margin:0;font-size:12px;line-height:1.6;">Pentru întrebări ne puteți scrie la <a href="mailto:contact@constria.ro" style="color:#f6e1ce;text-decoration:underline;">contact@constria.ro</a>. &copy; Constria</p>
+            </td>
+          </tr>
+
+        </table>
+
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
