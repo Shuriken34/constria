@@ -3,7 +3,7 @@ const express = require('express');
 const { get, all, run } = require('../db');
 const m = require('../models');
 const { categories, catMap, groupMap, counties, reportReasons } = require('../data');
-const { faq, testimonials, safetyTips } = require('../content');
+const { faq, safetyTips } = require('../content');
 const { flash, requireAuth } = require('../middleware');
 const { listingUrl } = require('../helpers');
 
@@ -20,7 +20,6 @@ r.get('/', (req, res) => {
     stats: m.siteStats(),
     posts: all('SELECT * FROM posts ORDER BY created_at DESC LIMIT 3'),
     faq: faq.slice(0, 5),
-    testimonials,
     home: true,
   });
 });

@@ -31,9 +31,15 @@
 <section class="section section--tight on-darker">
   <div class="container">
     <div class="stats">
-      <div class="stat"><strong class="tnum"><%= formatNumber(stats.listings) %></strong><span>Anunțuri active</span></div>
-      <div class="stat"><strong class="tnum"><%= formatNumber(stats.users) %></strong><span>Membri</span></div>
-      <div class="stat"><strong class="tnum"><%= formatNumber(stats.sold) %></strong><span>Anunțuri vândute</span></div>
+      <% if (stats.listings >= 20) { %>
+        <div class="stat"><strong class="tnum"><%= formatNumber(stats.listings) %></strong><span>Anunțuri active</span></div>
+        <div class="stat"><strong class="tnum"><%= formatNumber(stats.users) %></strong><span>Membri</span></div>
+        <div class="stat"><strong class="tnum"><%= formatNumber(stats.sold) %></strong><span>Anunțuri vândute</span></div>
+      <% } else { %>
+        <div class="stat"><strong class="tnum">3</strong><span>Secțiuni</span></div>
+        <div class="stat"><strong class="tnum"><%= categories.length %></strong><span>Categorii</span></div>
+        <div class="stat"><strong class="tnum">42</strong><span>Județe</span></div>
+      <% } %>
       <div class="stat"><strong class="tnum">0%</strong><span>Comision</span></div>
     </div>
   </div>

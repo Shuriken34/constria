@@ -121,7 +121,7 @@
     <div class="tools-top">
       <figure class="tools-media reveal">
         <img src="<%= images.tools %>" alt="Muncitor cu mască de sudură folosind un polizor unghiular, cu scântei" loading="lazy" data-parallax-small width="1600" height="2000">
-        <figcaption class="tag tag--red">Scule de închiriat de la 40 lei / zi</figcaption>
+        <figcaption class="tag tag--red">Scule de vânzare și de închiriat</figcaption>
       </figure>
       <div>
         <p class="eyebrow">Scule și unelte</p>
@@ -227,8 +227,13 @@
 <section class="section section--tight on-darker" aria-label="Constria în cifre">
   <div class="container">
     <div class="stats">
-      <div class="stat"><strong class="tnum" data-count="<%= stats.listings %>"><%= formatNumber(stats.listings) %></strong><span>Anunțuri active</span></div>
-      <div class="stat"><strong class="tnum" data-count="<%= stats.users %>"><%= formatNumber(stats.users) %></strong><span>Membri</span></div>
+      <% if (stats.listings >= 20) { %>
+        <div class="stat"><strong class="tnum" data-count="<%= stats.listings %>"><%= formatNumber(stats.listings) %></strong><span>Anunțuri active</span></div>
+        <div class="stat"><strong class="tnum" data-count="<%= stats.users %>"><%= formatNumber(stats.users) %></strong><span>Membri</span></div>
+      <% } else { %>
+        <div class="stat"><strong class="tnum">3</strong><span>Secțiuni</span></div>
+        <div class="stat"><strong class="tnum"><%= categories.length %></strong><span>Categorii</span></div>
+      <% } %>
       <div class="stat"><strong class="tnum">42</strong><span>Județe acoperite</span></div>
       <div class="stat"><strong class="tnum">0%</strong><span>Comision la vânzare</span></div>
     </div>
@@ -303,26 +308,6 @@
       <a class="btn btn--red btn--lg" href="/calculator"><i data-lucide="calculator"></i> Pornește calculatorul</a>
     </div>
     <figure class="reveal"><img src="<%= images.calcB %>" alt="Bormașină, ciocan și ruletă pe masa de lucru" loading="lazy" width="900" height="1200"></figure>
-  </div>
-</section>
-
-<!-- TESTIMONIALE -->
-<section class="section on-cream" aria-labelledby="quotes-title">
-  <div class="container">
-    <div class="section-head">
-      <div>
-        <p class="eyebrow">Ce spun membrii</p>
-        <h2 id="quotes-title" class="display display-l" style="margin-top:14px">Povești din șantier</h2>
-      </div>
-    </div>
-    <div class="quotes">
-      <% testimonials.forEach(function (t) { %>
-        <figure class="quote reveal">
-          <blockquote><%= t.text %></blockquote>
-          <figcaption><span class="avatar avatar--sm"><%= initials(t.name) %></span><span><strong><%= t.name %></strong><span class="muted"><%= t.role %></span></span></figcaption>
-        </figure>
-      <% }) %>
-    </div>
   </div>
 </section>
 

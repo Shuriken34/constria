@@ -12,23 +12,27 @@ npm install
 npm start
 ```
 
-Deschide http://localhost:3000. La prima pornire baza de date se populează automat cu date demonstrative.
+Deschide http://localhost:3000. La prima pornire site-ul pornește **gol**: doar contul de administrator și cele 3 ghiduri din blog. Primele anunțuri vin de la utilizatori reali.
 
-Pentru a reseta datele demonstrative:
+Resetare la site gol (șterge TOATE anunțurile, conturile și mesajele):
 
 ```bash
 npm run seed
 ```
 
-## Conturi de test (doar pentru dezvoltare)
+Date demonstrative fictive, **doar pentru testare locală** (nu le folosi pe serverul public – numerele de telefon și CUI-urile sunt inventate și pot aparține unor persoane reale):
+
+```bash
+npm run seed:demo
+```
+
+## Conturi
 
 | Rol | Email | Parolă |
 |---|---|---|
 | Administrator | admin@constria.ro | `Constria2026!` (sau valoarea din `ADMIN_PASSWORD`) |
-| Vânzător firmă | contact@depozitfloresti.ro | `demo12345` |
-| Persoană fizică | gabriel.s@exemplu.ro | `demo12345` |
 
-Toate conturile demonstrative din `src/seed.js` folosesc parola `demo12345`. **Schimbă parola de administrator înainte de lansare.**
+Doar cu `npm run seed:demo`: conturi fictive precum contact@depozitfloresti.ro sau gabriel.s@exemplu.ro, toate cu parola `demo12345`. **Schimbă parola de administrator înainte de lansare.**
 
 ## Funcționalități
 

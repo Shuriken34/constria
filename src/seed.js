@@ -146,7 +146,9 @@ const posts = [
   },
 ];
 
-function seed({ reset = false } = {}) {
+// demo = false (implicit): doar contul de administrator și ghidurile – site gol, gata de lansare
+// demo = true: plus utilizatori și anunțuri fictive, DOAR pentru testare locală
+function seed({ reset = false, demo = false } = {}) {
   if (reset) {
     db.exec('DELETE FROM messages; DELETE FROM conversations; DELETE FROM reviews; DELETE FROM favorites; DELETE FROM reports; DELETE FROM listing_images; DELETE FROM listings; DELETE FROM posts; DELETE FROM contact_messages; DELETE FROM users;');
   }
@@ -159,6 +161,11 @@ function seed({ reset = false } = {}) {
     run(`INSERT INTO users (email, password_hash, name, phone, county, city, role, verified, created_at)
          VALUES (?,?,?,?,?,?,'admin',1, datetime('now','-200 days'))`,
     ADMIN_EMAIL, bcrypt.hashSync(ADMIN_PASSWORD, 10), 'Administrator Constria', '0700 000 000', 'București', 'București');
+
+    posts.forEach((p, i) => run("INSERT INTO posts (slug, title, excerpt, body, image, tag, created_at) VALUES (?,?,?,?,?,?, datetime('now', ?))",
+      p.slug, p.title, p.excerpt, p.body, p.image, p.tag, `-${(i + 1) * 6} days`));
+
+    if (!demo) return;
 
     const ids = users.map((u, i) => Number(run(
       `INSERT INTO users (email, password_hash, name, phone, county, city, account_type, company_name, cui, about, verified, created_at, last_seen)
@@ -218,14 +225,12 @@ function seed({ reset = false } = {}) {
 
     // Favorite
     [[3, 0], [3, 6], [4, 14], [5, 11], [9, 29]].forEach(([u, l]) => run('INSERT OR IGNORE INTO favorites (user_id, listing_id) VALUES (?,?)', ids[u], listingIds[l]));
-
-    posts.forEach((p, i) => run("INSERT INTO posts (slug, title, excerpt, body, image, tag, created_at) VALUES (?,?,?,?,?,?, datetime('now', ?))",
-      p.slug, p.title, p.excerpt, p.body, p.image, p.tag, `-${(i + 1) * 6} days`));
   });
-  console.log(`Date demonstrative create: ${users.length + 1} utilizatori, ${listings.length} anunțuri.`);
+  if (demo) console.log(`Date demonstrative create: ${users.length + 1} utilizatori, ${listings.length} anunțuri (DOAR pentru testare).`);
+  else console.log('Bază de date goală: doar contul de administrator și ghidurile.');
   console.log(`Admin: ${ADMIN_EMAIL} (parola în README.md sau variabila ADMIN_PASSWORD)`);
 }
 
 module.exports = { seed };
 
-if (require.main === module) seed({ reset: true });
+if (require.main === module) seed({ reset: true, demo: process.argv.includes('--demo') });
