@@ -2,4 +2,9 @@ node_modules/
 data/
 public/uploads/*
 !public/uploads/.gitkeep
+# Fișiere de mediu: ignorate implicit (pot conține secrete)
 .env
+.env.*
+# Excepții permise în Git: doar valori publice, fără chei secrete
+!.env.example
+!.env.production

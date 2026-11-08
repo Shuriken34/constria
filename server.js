@@ -2,9 +2,17 @@
 const path = require('node:path');
 const fs = require('node:fs');
 
-// Variabilele din .env (Node 21.7+ le citește nativ)
-const envFile = path.join(__dirname, '.env');
-if (fs.existsSync(envFile)) process.loadEnvFile(envFile);
+// Variabilele de mediu (Node 21.7+ le citește nativ). Valorile deja setate în sistem au prioritate,
+// apoi .env (local), apoi .env.production când NODE_ENV=production.
+const envFiles = ['.env'];
+if (process.env.NODE_ENV === 'production') envFiles.push('.env.production');
+for (const name of envFiles) {
+  const file = path.join(__dirname, name);
+  if (!fs.existsSync(file)) continue;
+  for (const [k, v] of Object.entries(require('node:util').parseEnv(fs.readFileSync(file, 'utf8')))) {
+    if (process.env[k] === undefined) process.env[k] = v;
+  }
+}
 
 const crypto = require('node:crypto');
 const express = require('express');
