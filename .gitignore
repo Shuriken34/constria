@@ -1,5 +1,7 @@
 node_modules/
 data/
+# Liste de prospectare (date de contact ale altor firme) – nu se urcă în Git
+outreach/
 public/uploads/*
 !public/uploads/.gitkeep
 # Fișiere de mediu: ignorate implicit (pot conține secrete)
