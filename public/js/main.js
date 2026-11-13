@@ -244,7 +244,7 @@
   const priceField = $('[data-price-field]');
   const syncPrice = () => {
     const sel = $('[data-price-type]:checked');
-    if (priceField && sel) { priceField.hidden = sel.value === 'gratuit'; }
+    if (priceField && sel) { priceField.hidden = sel.value === 'gratuit' || sel.value === 'cerere'; }
   };
   $$('[data-price-type]').forEach((r) => r.addEventListener('change', syncPrice));
   syncPrice();

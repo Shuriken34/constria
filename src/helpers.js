@@ -25,7 +25,13 @@ function formatNumber(n) {
 
 function formatPrice(l) {
   if (l.price_type === 'gratuit') return 'Gratuit';
+  if (l.price_type === 'cerere') return 'Preț la cerere';
   return `${formatNumber(l.price)} lei`;
+}
+
+// Afișăm „/ unitate” doar când anunțul are un preț în lei
+function hasPrice(l) {
+  return l.price_type !== 'gratuit' && l.price_type !== 'cerere';
 }
 
 function unitLabel(id) {
@@ -122,7 +128,7 @@ function truncate(s = '', n = 140) {
 }
 
 module.exports = {
-  stripDiacritics, slugify, formatNumber, formatPrice, unitLabel, timeAgo, formatDate, formatTime, plural,
+  stripDiacritics, slugify, formatNumber, formatPrice, hasPrice, unitLabel, timeAgo, formatDate, formatTime, plural,
   initials, imgSrc, listingUrl, token, maskPhone, whatsappLink, buildQuery, truncate, parseDate,
   catMap, unitMap, conditionMap, deliveryMap,
 };

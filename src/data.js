@@ -89,6 +89,7 @@ const priceTypes = [
   { id: 'fix', name: 'Preț fix' },
   { id: 'negociabil', name: 'Negociabil' },
   { id: 'gratuit', name: 'Gratuit' },
+  { id: 'cerere', name: 'Preț la cerere' },
 ];
 
 const reportReasons = [

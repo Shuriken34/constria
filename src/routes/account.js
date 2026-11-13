@@ -42,7 +42,7 @@ function parseListing(body) {
     title: (body.title || '').trim().replace(/\s+/g, ' ').slice(0, 90),
     category: catMap[body.category] ? body.category : '',
     description: (body.description || '').trim().slice(0, 5000),
-    price_type: ['fix', 'negociabil', 'gratuit'].includes(body.price_type) ? body.price_type : 'fix',
+    price_type: ['fix', 'negociabil', 'gratuit', 'cerere'].includes(body.price_type) ? body.price_type : 'fix',
     price: num(body.price),
     unit: unitMap[body.unit] ? body.unit : 'buc',
     quantity: num(body.quantity),
@@ -68,11 +68,11 @@ function parseListing(body) {
   } else {
     d.listing_type = 'vanzare';
   }
-  if (d.price_type === 'gratuit') d.price = 0;
+  if (d.price_type === 'gratuit' || d.price_type === 'cerere') d.price = 0;
   if (d.title.length < 8) errors.title = 'Titlul trebuie să aibă cel puțin 8 caractere. Ex: „BCA 25 cm Ytong – 2 paleți”.';
   if (!d.category) errors.category = 'Alege categoria potrivită.';
   if (d.description.length < 30) errors.description = 'Descrierea trebuie să aibă cel puțin 30 de caractere. Spune starea, dimensiunile și cantitatea.';
-  if (d.price_type !== 'gratuit' && !(d.price > 0)) errors.price = 'Scrie un preț mai mare de 0 sau alege „Gratuit”.';
+  if (d.price_type !== 'gratuit' && d.price_type !== 'cerere' && !(d.price > 0)) errors.price = 'Scrie un preț mai mare de 0 sau alege „Gratuit” ori „Preț la cerere”.';
   if (d.price > 10000000) errors.price = 'Prețul pare prea mare. Verifică valoarea.';
   if (d.quantity !== null && d.quantity < 0) errors.quantity = 'Cantitatea nu poate fi negativă.';
   if (!d.county) errors.county = 'Alege județul.';

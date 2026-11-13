@@ -37,6 +37,8 @@ async function searchListings(sb, f = {}, { page = 1, perPage = 24, userId = nul
     if (f.delivery === 'livrare') q = q.in('delivery', ['livrare', 'ambele']);
     if (f.min) q = q.gte('price', Number(f.min));
     if (f.max) q = q.lte('price', Number(f.max));
+    // „Preț la cerere” are price = 0, deci nu trebuie să apară la filtrele de preț
+    if (f.min || f.max) q = q.neq('price_type', 'cerere');
     if (f.free) q = q.eq('price_type', 'gratuit');
     if (f.seller) q = q.eq('user_id', f.seller);
     if (f.type === 'vanzare' || f.type === 'inchiriere') q = q.eq('listing_type', f.type);

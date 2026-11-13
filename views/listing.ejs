@@ -87,8 +87,9 @@
           <button class="fav-btn" style="position:static;box-shadow:none;border:2px solid var(--line)" type="button" data-fav="<%= l.id %>" aria-pressed="<%= isFav ? 'true' : 'false' %>" aria-label="<%= isFav ? 'Șterge din favorite' : 'Salvează la favorite' %>"><i data-lucide="heart"></i></button>
         </div>
         <h1 style="margin-top:12px"><%= l.title %></h1>
-        <div class="price-big tnum"><%= formatPrice(l) %><% if (l.price_type !== 'gratuit') { %> <small>/ <%= unitLabel(l.unit) %></small><% } %></div>
+        <div class="price-big tnum"><%= formatPrice(l) %><% if (hasPrice(l)) { %> <small>/ <%= unitLabel(l.unit) %></small><% } %></div>
         <% if (l.price_type === 'negociabil') { %><p class="muted" style="font-weight:700;margin-top:4px">Preț negociabil</p><% } %>
+        <% if (l.price_type === 'cerere') { %><p class="muted" style="font-weight:700;margin-top:4px">Sună vânzătorul pentru prețul actual</p><% } %>
         <div class="meta-line">
           <span><i data-lucide="map-pin"></i><%= l.city %>, <%= l.county %></span>
           <span><i data-lucide="clock"></i><%= timeAgo(l.created_at) %></span>

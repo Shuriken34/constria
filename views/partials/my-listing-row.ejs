@@ -3,7 +3,7 @@
   <div style="min-width:0">
     <h3><a href="<%= listingUrl(l) %>"><%= l.title %></a></h3>
     <div class="sub">
-      <span class="tnum"><strong><%= formatPrice(l) %></strong><%= l.price_type !== 'gratuit' ? ' / ' + unitLabel(l.unit) : '' %></span>
+      <span class="tnum"><strong><%= formatPrice(l) %></strong><%= hasPrice(l) ? ' / ' + unitLabel(l.unit) : '' %></span>
       <span><i data-lucide="eye"></i><%= l.views %></span>
       <span><i data-lucide="heart"></i><%= l.fav_count %></span>
       <span><i data-lucide="message-circle"></i><%= l.conv_count %></span>

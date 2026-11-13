@@ -10,7 +10,7 @@
   <a class="card-link" href="<%= listingUrl(l) %>"><span class="sr-only"><%= l.title %></span></a>
   <button class="fav-btn" type="button" data-fav="<%= l.id %>" aria-pressed="<%= l.is_fav ? 'true' : 'false' %>" aria-label="<%= l.is_fav ? 'Șterge din favorite' : 'Salvează la favorite' %>: <%= l.title %>"><i data-lucide="heart"></i></button>
   <div class="card-body">
-    <div class="card-price tnum"><%= formatPrice(l) %><% if (l.price_type !== 'gratuit') { %> <small>/ <%= unitLabel(l.unit) %><%= l.price_type === 'negociabil' ? ' · neg.' : '' %></small><% } %></div>
+    <div class="card-price tnum"><%= formatPrice(l) %><% if (hasPrice(l)) { %> <small>/ <%= unitLabel(l.unit) %><%= l.price_type === 'negociabil' ? ' · neg.' : '' %></small><% } %></div>
     <h3 class="card-title"><%= l.title %></h3>
     <% if (l.year || l.hours) { %><p class="card-specs"><%= [l.year, l.hours ? formatNumber(l.hours) + ' ore' : null].filter(Boolean).join(' · ') %></p><% } %>
     <div class="card-meta">
