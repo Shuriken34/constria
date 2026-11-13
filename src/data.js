@@ -23,6 +23,7 @@ const categories = [
   { group: 'materiale', slug: 'instalatii', name: 'Instalații sanitare și termice', short: 'Instalații', icon: 'wrench', image: U('photo-1607472586893-edb57bdc0e39', 800) },
   { group: 'materiale', slug: 'usi-ferestre', name: 'Uși și ferestre', short: 'Uși & ferestre', icon: 'door-open', image: U('photo-1527352774566-e4916e36c645', 800) },
   { group: 'materiale', slug: 'agregate', name: 'Agregate: nisip, pietriș', short: 'Agregate', icon: 'mountain', image: U('photo-1604178449672-3e7d72d5a09a', 800) },
+  { group: 'materiale', slug: 'pavaje-borduri', name: 'Pavaje, borduri și garduri din beton', short: 'Pavaje', icon: 'grid-2x2', image: U('photo-1742036953121-0b36e932d807', 800) },
   { group: 'materiale', slug: 'electrice', name: 'Materiale electrice', short: 'Electrice', icon: 'zap', image: U('photo-1607400201889-565b1ee75f8e', 800) },
   // Utilaje și echipamente
   { group: 'utilaje', slug: 'excavatoare', name: 'Excavatoare și buldoexcavatoare', short: 'Excavatoare', icon: 'tractor', image: U('photo-1580901369227-308f6f40bdeb', 800) },
