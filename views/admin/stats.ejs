@@ -1,0 +1,71 @@
+<%- include('../partials/head') %>
+<%
+  const luni = ['ian.', 'feb.', 'mar.', 'apr.', 'mai', 'iun.', 'iul.', 'aug.', 'sep.', 'oct.', 'nov.', 'dec.'];
+  const zi = (d) => { const p = String(d).split('-'); return Number(p[2]) + ' ' + luni[Number(p[1]) - 1]; };
+  const surse = { direct: 'Direct (link scris sau salvat)', facebook: 'Facebook', instagram: 'Instagram', tiktok: 'TikTok', google: 'Google', messenger: 'Messenger', whatsapp: 'WhatsApp', youtube: 'YouTube' };
+  const perioada = { 1: 'Azi', 7: '7 zile', 30: '30 de zile', 90: '90 de zile' };
+  const days = s.days || [], sources = s.sources || [], listings = s.listings || [], pages = s.pages || [];
+  const maxV = Math.max(1, ...days.map((d) => d.visitors));
+%>
+<section class="container" style="padding-block:40px 96px">
+  <p class="eyebrow">Administrare</p>
+  <h1 class="display display-l" style="margin-top:10px">Statistici</h1>
+  <%- include('nav') %>
+
+  <nav class="seg" aria-label="Perioadă">
+    <% periods.forEach(function (p) { %>
+      <a href="/admin/statistici?zile=<%= p %>" <%- p === period ? 'aria-current="page"' : '' %>><%= perioada[p] %></a>
+    <% }) %>
+  </nav>
+
+  <div class="kpis">
+    <div class="kpi"><strong class="tnum"><%= formatNumber(s.visitors || 0) %></strong><span>Vizitatori</span></div>
+    <div class="kpi"><strong class="tnum"><%= formatNumber(s.pageviews || 0) %></strong><span>Pagini vizualizate</span></div>
+    <div class="kpi"><strong class="tnum"><%= formatNumber(s.listing_views || 0) %></strong><span>Anunțuri deschise</span></div>
+    <div class="kpi"><strong class="tnum"><%= formatNumber(s.phones || 0) %></strong><span>Clicuri „Arată telefonul”</span></div>
+  </div>
+  <p class="muted" style="margin:-12px 0 28px;font-size:.88rem">Vizitele tale (cont de admin) și roboții nu sunt numărați. Un vizitator e numărat o singură dată pe zi, fără cookie-uri și fără date personale.</p>
+
+  <h2 class="display display-s" style="margin:32px 0 14px">De unde vin vizitatorii</h2>
+  <% if (sources.length) { %>
+    <div class="table-wrap"><table class="table">
+      <thead><tr><th>Sursă</th><th class="tnum">Vizitatori</th><th class="tnum">Pagini</th></tr></thead>
+      <tbody><% sources.forEach(function (x) { %>
+        <tr><td><%= surse[x.source] || x.source %></td><td class="tnum"><%= formatNumber(x.visitors) %></td><td class="tnum"><%= formatNumber(x.pageviews) %></td></tr>
+      <% }) %></tbody>
+    </table></div>
+  <% } else { %><p class="muted">Încă nu sunt vizite în această perioadă.</p><% } %>
+
+  <h2 class="display display-s" style="margin:40px 0 14px">Pe zile</h2>
+  <% if (days.length) { %>
+    <div class="table-wrap"><table class="table">
+      <thead><tr><th>Ziua</th><th style="width:40%"></th><th class="tnum">Vizitatori</th><th class="tnum">Pagini</th><th class="tnum">Telefon afișat</th></tr></thead>
+      <tbody><% days.forEach(function (d) { %>
+        <tr><td><%= zi(d.day) %></td>
+          <td><div style="height:10px;border-radius:999px;background:var(--red, #f00037);width:<%= Math.round(d.visitors / maxV * 100) %>%;min-width:<%= d.visitors ? 4 : 0 %>px"></div></td>
+          <td class="tnum"><%= formatNumber(d.visitors) %></td><td class="tnum"><%= formatNumber(d.pageviews) %></td><td class="tnum"><%= formatNumber(d.phones) %></td></tr>
+      <% }) %></tbody>
+    </table></div>
+  <% } else { %><p class="muted">Nicio activitate în această perioadă.</p><% } %>
+
+  <h2 class="display display-s" style="margin:40px 0 14px">Anunțuri cu cel mai mult interes</h2>
+  <% if (listings.length) { %>
+    <div class="table-wrap"><table class="table">
+      <thead><tr><th>Anunț</th><th class="tnum">Vizualizări</th><th class="tnum">Telefon afișat</th></tr></thead>
+      <tbody><% listings.forEach(function (x) { %>
+        <tr><td><a href="<%= listingUrl(x) %>"><%= truncate(x.title, 60) %></a></td><td class="tnum"><%= formatNumber(x.views) %></td><td class="tnum"><%= formatNumber(x.phones) %></td></tr>
+      <% }) %></tbody>
+    </table></div>
+  <% } else { %><p class="muted">Niciun anunț vizualizat în această perioadă.</p><% } %>
+
+  <h2 class="display display-s" style="margin:40px 0 14px">Alte pagini vizitate</h2>
+  <% if (pages.length) { %>
+    <div class="table-wrap"><table class="table">
+      <thead><tr><th>Pagină</th><th class="tnum">Vizualizări</th></tr></thead>
+      <tbody><% pages.forEach(function (x) { %>
+        <tr><td><a href="<%= x.path %>"><%= x.path === '/' ? 'Prima pagină' : x.path %></a></td><td class="tnum"><%= formatNumber(x.pageviews) %></td></tr>
+      <% }) %></tbody>
+    </table></div>
+  <% } else { %><p class="muted">Nicio pagină vizitată în această perioadă.</p><% } %>
+</section>
+<%- include('../partials/foot') %>

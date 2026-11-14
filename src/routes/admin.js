@@ -33,6 +33,14 @@ r.get('/', async (req, res) => {
   res.render('admin/index', { title: 'Administrare', stats, reports, contacts, section: 'panou' });
 });
 
+// Statistici de trafic: vizitatori, surse, afișări de telefon (doar admin, prin RLS)
+const PERIODS = [1, 7, 30, 90];
+r.get('/statistici', async (req, res) => {
+  const days = PERIODS.includes(Number(req.query.zile)) ? Number(req.query.zile) : 7;
+  const s = must(await req.sb.rpc('site_stats', { p_days: days })) || {};
+  res.render('admin/stats', { title: 'Statistici', s, period: days, periods: PERIODS, section: 'statistici' });
+});
+
 r.get('/anunturi', async (req, res) => {
   const qq = (req.query.q || '').toString().trim().replace(/[%_,()]/g, '');
   let q = req.sb.from('listing_cards').select('*').order('created_at', { ascending: false }).limit(200);

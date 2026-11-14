@@ -21,6 +21,7 @@ const cookieSession = require('cookie-session');
 const helpers = require('./src/helpers');
 const data = require('./src/data');
 const { loadUser, csrf, verifyCsrf, flashLocals } = require('./src/middleware');
+const analytics = require('./src/analytics');
 
 const app = express();
 const PORT = Number(process.env.PORT) || 3000;
@@ -34,6 +35,8 @@ function sessionSecret() {
   if (!fs.existsSync(f)) fs.writeFileSync(f, crypto.randomBytes(32).toString('hex'));
   return fs.readFileSync(f, 'utf8').trim();
 }
+
+const SECRET = sessionSecret();
 
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
@@ -55,7 +58,7 @@ app.use(express.urlencoded({ extended: false, limit: '200kb' }));
 app.use(express.json({ limit: '100kb' }));
 app.use(cookieSession({
   name: 'co_sess',
-  keys: [sessionSecret()],
+  keys: [SECRET],
   maxAge: 30 * 24 * 3600 * 1000,
   httpOnly: true,
   sameSite: 'lax',
@@ -79,6 +82,7 @@ app.use((req, res, next) => {
 });
 
 app.use(loadUser);
+app.use(analytics.pageviews(SECRET));
 app.use(csrf);
 app.use(flashLocals);
 app.use(verifyCsrf);

@@ -45,8 +45,9 @@ The server never uses a service/secret key. Every query runs through `req.sb` as
 
 - Schema, policies, views and functions exist only as migrations applied to the Supabase project (`uqligfwvdktyeeetqyio`); there are no migration files in this repo. Use the Supabase MCP tools to inspect or change them, and run the security advisor afterwards.
 - Read-side views (`security_invoker`): `listing_cards` (listing + seller fields + `cover` image, the main source for cards and the listing page), `category_counts`, `seller_stats`, `conversation_overview` (last message + unread count for the current user).
-- Operations that need to bypass grants go through `SECURITY DEFINER` RPCs with internal checks: `get_listing_phone` (active listings only), `increment_listing_views`, `my_listing_fav_counts`, `admin_set_featured`, `admin_set_profile_flags`, `delete_my_account`.
+- Operations that need to bypass grants go through `SECURITY DEFINER` RPCs with internal checks: `get_listing_phone` (active listings only), `increment_listing_views`, `my_listing_fav_counts`, `admin_set_featured`, `admin_set_profile_flags`, `delete_my_account`, `track_event`.
 - Private data is split out: emails and phones live in `profile_contacts` (owner/admin only), and public profile fields in `profiles`. A trigger on `auth.users` creates both rows from the sign-up metadata.
+- Traffic analytics (`src/analytics.js`): page views of successful HTML GETs and phone reveals go to `site_events` via `track_event`, with no cookies; the visitor is a daily hash of IP + user agent + `SESSION_SECRET`. Bots and admins are skipped. Only admins can read it (RLS), through `site_stats(p_days)`, shown at `/admin/statistici`.
 - Every form submission requires an account (listings, messages, favourites, reviews, reports, contact form). Browsing, search and phone reveal are public.
 
 ### Domain data and listings

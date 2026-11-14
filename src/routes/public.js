@@ -6,6 +6,7 @@ const { categories, catMap, groupMap, counties, reportReasons } = require('../da
 const { faq, safetyTips } = require('../content');
 const { flash, requireAuth } = require('../middleware');
 const { listingUrl } = require('../helpers');
+const { track } = require('../analytics');
 
 const r = express.Router();
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -117,6 +118,7 @@ r.get('/anunt/:idslug', async (req, res, next) => {
 r.get('/api/anunt/:id/telefon', async (req, res) => {
   const phone = await m.listingPhone(req.sb, req.params.id);
   if (!phone) return res.status(404).json({ error: 'Telefon indisponibil' });
+  track(req, 'phone', req.params.id);
   res.json({ phone });
 });
 
