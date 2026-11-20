@@ -30,25 +30,33 @@ function Eyebrow({ children, className = "text-muted" }: { children: React.React
 export function Hero() {
   return (
     <section data-hero className="relative isolate flex min-h-[calc(100dvh-76px)] items-end overflow-hidden text-cream">
-      <HeroVideo src={media.heroVideo} poster={media.heroPoster} />
+      <HeroVideo clips={media.heroClips} poster={media.heroPoster} />
       <div className={`${wrap} pt-28 pb-[clamp(28px,5vw,56px)]`}>
         <p className="hero-fade flex items-center gap-3 text-[0.8rem] font-extrabold uppercase tracking-[0.16em]">
           <span className="h-px w-10 bg-cream" aria-hidden="true" />
-          Schimbare acoperiș · Foișoare · Garduri
+          Acoperișuri · Foișoare · Garduri
         </p>
-        <h1 className="display mt-4 text-[clamp(3.4rem,12.5vw,14rem)] [text-shadow:0_4px_40px_rgba(46,0,26,0.35)]">
+        <h1 className="display mt-4 text-[clamp(3.2rem,11.5vw,13rem)] [text-shadow:0_4px_40px_rgba(46,0,26,0.35)]">
           <span data-hero-line="1" className="-my-[0.12em] block overflow-hidden py-[0.12em]">
-            <span className="hero-rise block whitespace-nowrap">Schimbăm</span>
+            <span className="hero-rise block whitespace-nowrap">Construiește</span>
           </span>
-          <span data-hero-line="-1" className="-my-[0.12em] block overflow-hidden py-[0.12em] text-right">
-            <span className="hero-rise block whitespace-nowrap text-red">acoperișul</span>
+          <span data-hero-line="-1" className="-mb-[0.12em] mt-[0.32em] block overflow-hidden py-[0.12em] text-right">
+            <span className="hero-rise block whitespace-nowrap">
+              ca la <span className="text-red">carte</span>
+            </span>
           </span>
         </h1>
         <div className="mt-8 flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
-          <p className="hero-fade max-w-[52ch] text-lg leading-relaxed">
-            <strong className="font-extrabold">Acoperișul vechi îl înlocuim cu unul nou, de la șarpantă la jgheaburi.</strong>{" "}
-            Construim foișoare din lemn și montăm garduri de orice tip.
-          </p>
+          <div className="hero-fade max-w-[56ch]">
+            <p className="text-[clamp(1.25rem,2vw,1.6rem)] leading-snug font-extrabold">
+              Acoperiș nou. Foișor nou. Toate la calitate superioară.
+            </p>
+            <p className="mt-3 text-lg leading-relaxed text-cream/90">
+              Schimbăm acoperișul vechi cu tablă nouă, de la șarpantă până la jgheaburi, și construim foișoare
+              tradiționale din lemn masiv, cu acoperiș asortat casei. Lucrăm cu echipa noastră și cu materiale de
+              calitate, iar la final primești garanție scrisă.
+            </p>
+          </div>
           <div className="hero-fade flex flex-wrap gap-2.5">
             {mainServices.map((s) => (
               <a

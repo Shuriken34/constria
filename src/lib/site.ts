@@ -16,7 +16,10 @@ export const site = {
 const px = (path: string) => `https://images.pexels.com/photos/${path}`;
 
 export const media = {
-  heroVideo: "https://videos.pexels.com/video-files/13361432/13361432-hd_1280_720_60fps.mp4",
+  // Clipurile din prima secțiune rulează pe rând, în ordinea de aici.
+  // TODO: înlocuiește-le cu clipuri cu lucrările voastre (tablă maro pe case românești, foișor în construcție):
+  // pune fișierele .mp4 în /public/video/ și scrie aici "/video/nume.mp4".
+  heroClips: ["https://videos.pexels.com/video-files/13361432/13361432-hd_1280_720_60fps.mp4"],
   heroPoster: px("37704251/pexels-photo-37704251/free-photo-of-professional-roofer-working-safely-on-a-building-roof.jpeg?auto=compress&cs=tinysrgb&w=1600"),
   roofBand: px("32050401/pexels-photo-32050401/free-photo-of-silhouetted-workers-on-rooftop-against-blue-sky.jpeg"),
   gazeboBand: px("6903862/pexels-photo-6903862.jpeg"),

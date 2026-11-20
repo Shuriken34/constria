@@ -3,11 +3,13 @@
 import { useEffect, useRef, useState } from "react";
 import { Pause, Play } from "lucide-react";
 
-export function HeroVideo({ src, poster }: { src: string; poster: string }) {
+// Rulează clipurile pe rând (unul singur se repetă). Are buton de pauză și
+// nu pornește singur pentru cine a cerut mai puțină mișcare.
+export function HeroVideo({ clips, poster }: { clips: string[]; poster: string }) {
   const ref = useRef<HTMLVideoElement>(null);
+  const [index, setIndex] = useState(0);
   const [playing, setPlaying] = useState(true);
 
-  // Cine a cerut mai puțină mișcare vede doar primul cadru
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       ref.current?.pause();
@@ -21,22 +23,28 @@ export function HeroVideo({ src, poster }: { src: string; poster: string }) {
     else v.pause();
   }
 
+  function next() {
+    setIndex((i) => (i + 1) % clips.length);
+  }
+
   return (
     <>
       <div data-hero-media className="absolute inset-x-0 -top-[6%] -bottom-[6%] -z-10">
         <video
           ref={ref}
+          key={clips[index]}
           className="h-full w-full object-cover"
-          src={src}
-          poster={poster}
+          src={clips[index]}
+          poster={index === 0 ? poster : undefined}
           autoPlay
           muted
-          loop
+          loop={clips.length === 1}
           playsInline
           preload="metadata"
+          aria-hidden="true"
           onPlay={() => setPlaying(true)}
           onPause={() => setPlaying(false)}
-          aria-hidden="true"
+          onEnded={next}
         />
         <div className="absolute inset-0 bg-plum-700 opacity-40 mix-blend-multiply" />
         <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(46,0,26,0.55)_0%,rgba(46,0,26,0.25)_40%,rgba(46,0,26,0.85)_100%)]" />
