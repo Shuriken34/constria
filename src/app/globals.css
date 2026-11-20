@@ -33,12 +33,15 @@ body {
   font-family: var(--font-sans);
 }
 
-.display {
-  font-family: var(--font-display);
-  font-weight: 400;
-  text-transform: uppercase;
-  line-height: 0.95;
-  letter-spacing: 0.005em;
+/* În stratul „components”, ca utilitarele Tailwind (ex. leading-*) să o poată ajusta local */
+@layer components {
+  .display {
+    font-family: var(--font-display);
+    font-weight: 400;
+    text-transform: uppercase;
+    line-height: 0.95;
+    letter-spacing: 0.005em;
+  }
 }
 
 :focus-visible {

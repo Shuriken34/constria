@@ -21,7 +21,7 @@ export const media = {
   // pune fișierele .mp4 în /public/video/ și scrie aici "/video/nume.mp4".
   heroClips: ["https://videos.pexels.com/video-files/13361432/13361432-hd_1280_720_60fps.mp4"],
   heroPoster: px("37704251/pexels-photo-37704251/free-photo-of-professional-roofer-working-safely-on-a-building-roof.jpeg?auto=compress&cs=tinysrgb&w=1600"),
-  roofBand: px("32050401/pexels-photo-32050401/free-photo-of-silhouetted-workers-on-rooftop-against-blue-sky.jpeg"),
+  roofBand: "/lucrari/acoperis-tigla-maro-vedere-sus.jpg",
   gazeboBand: "/lucrari/foisor-romanesc-terminat.jpg",
 };
 
@@ -54,8 +54,8 @@ export const services: Service[] = [
       "Jgheaburi, burlane și opritori de zăpadă",
       "Lucrăm pe etape, nu rămâi descoperit",
     ],
-    image: px("31763534/pexels-photo-31763534/free-photo-of-rustic-roof-renovation-with-chimney-and-ladder.jpeg"),
-    alt: "Acoperiș vechi în renovare, cu horn și scară",
+    image: "/lucrari/acoperis-tigla-maro-casa.jpg",
+    alt: "Casă cu acoperișul schimbat de Constria, cu țiglă metalică maro și opritori de zăpadă",
   },
   {
     id: "foisoare",
@@ -97,8 +97,8 @@ export const services: Service[] = [
     main: false,
     summary: "Pentru case noi: de la șarpanta din lemn până la coamă.",
     details: ["Șarpantă din lemn tratat", "Tablă fălțuită sau țiglă metalică", "Jgheaburi și burlane"],
-    image: px("33404080/pexels-photo-33404080/free-photo-of-roof-installation-on-brick-house-in-fort-worth.jpeg"),
-    alt: "Echipă care montează un acoperiș nou pe o casă din cărămidă",
+    image: "/lucrari/acoperis-sipci-folie.jpg",
+    alt: "Șipci din lemn montate peste folia anticondens, înainte de învelitoare",
   },
   {
     id: "vopsire-acoperis",
@@ -122,16 +122,58 @@ export const services: Service[] = [
   },
 ];
 
-// Lucrări realizate de Constria (din pagina de Facebook). Primele apar primele în galerie.
-export const gallery = [
-  { src: "/lucrari/foisor-romanesc-terminat.jpg", w: 1079, h: 1160, alt: "Foișor din lemn cu acoperiș din țiglă metalică maro, lângă o casă albă" },
-  { src: "/lucrari/foisor-romanesc-montaj-acoperis.jpg", w: 756, h: 700, alt: "Montajul acoperișului din țiglă metalică maro pe un foișor din lemn" },
-  { src: "/lucrari/foisor-tavan-lemn.jpg", w: 971, h: 2048, alt: "Tavanul din lemn al unui foișor, văzut de dedesubt" },
-  { src: "/lucrari/pavilion-lemn-casa.jpg", w: 1200, h: 568, alt: "Foișor din lemn lipit de casă, peste terasă" },
-  { src: "/lucrari/pavilion-lemn-structura.jpg", w: 960, h: 720, alt: "Structura unui foișor mare din lemn, în timpul montajului" },
-  { src: "/lucrari/pavilion-lemn-constructie.jpg", w: 960, h: 540, alt: "Echipa montează căpriorii unui foișor din lemn" },
-  { src: "/lucrari/pergola-lemn.jpg", w: 949, h: 949, alt: "Pergolă din lemn masiv în fața unei case" },
-  { src: "/lucrari/fundatie-beton-foisor.jpg", w: 960, h: 720, alt: "Fundația din beton turnată pentru un foișor" },
+// Lucrări realizate de Constria, grupate pe proiecte. Primul proiect apare primul.
+export type Photo = { src: string; w: number; h: number; alt: string };
+export type Project = { id: string; title: string; text: string; photos: Photo[] };
+
+export const projects: Project[] = [
+  {
+    id: "schimbare-acoperis-tigla-maro",
+    title: "Schimbare acoperiș cu țiglă metalică maro",
+    text: "Am înlocuit acoperișul unei case și al copertinei de la intrare: șipci noi peste folie anticondens, țiglă metalică maro, opritori de zăpadă, jgheaburi și streașină cu lambriu.",
+    photos: [
+      { src: "/lucrari/acoperis-tigla-maro-casa.jpg", w: 1440, h: 1080, alt: "Casa cu acoperișul nou din țiglă metalică maro, văzută din curte" },
+      { src: "/lucrari/acoperis-montaj-tigla-maro.jpg", w: 1080, h: 1440, alt: "Montajul țiglei metalice maro pe acoperișul copertinei" },
+      { src: "/lucrari/acoperis-tigla-maro-opritori-zapada.jpg", w: 1440, h: 1080, alt: "Țiglă metalică maro cu opritori de zăpadă, de aproape" },
+      { src: "/lucrari/acoperis-tigla-maro-vedere-sus.jpg", w: 1440, h: 1080, alt: "Acoperișul nou văzut de sus, cu satul în fundal" },
+      { src: "/lucrari/acoperis-tigla-maro-streasina.jpg", w: 1080, h: 1440, alt: "Acoperișul casei și copertina de la intrare, cu jgheaburi noi" },
+      { src: "/lucrari/acoperis-montaj-copertina.jpg", w: 1080, h: 1174, alt: "Echipa montează acoperișul copertinei de la intrare" },
+      { src: "/lucrari/acoperis-jgheab-lambriu.jpg", w: 1080, h: 1440, alt: "Jgheab nou și streașină din lambriu, văzute de dedesubt" },
+      { src: "/lucrari/acoperis-sipci-folie.jpg", w: 1080, h: 1440, alt: "Șipci din lemn peste folia anticondens, înainte de țiglă" },
+    ],
+  },
+  {
+    id: "foisoare-romanesti",
+    title: "Foișoare din lemn cu acoperiș din țiglă metalică",
+    text: "Foișoare construite pe fundație de beton, din lemn masiv, cu balustradă și acoperiș din țiglă metalică maro.",
+    photos: [
+      { src: "/lucrari/foisor-romanesc-terminat.jpg", w: 1079, h: 1160, alt: "Foișor din lemn cu acoperiș din țiglă metalică maro, lângă o casă albă" },
+      { src: "/lucrari/foisor-romanesc-montaj-acoperis.jpg", w: 756, h: 700, alt: "Montajul acoperișului din țiglă metalică maro pe un foișor din lemn" },
+    ],
+  },
+  {
+    id: "foisoare-pergole",
+    title: "Foișoare și pergole din lemn masiv",
+    text: "Structuri mari din lemn, de la fundația de beton la acoperiș.",
+    photos: [
+      { src: "/lucrari/foisor-tavan-lemn.jpg", w: 971, h: 2048, alt: "Tavanul din lemn al unui foișor, văzut de dedesubt" },
+      { src: "/lucrari/pavilion-lemn-casa.jpg", w: 1200, h: 568, alt: "Foișor din lemn lipit de casă, peste terasă" },
+      { src: "/lucrari/pavilion-lemn-structura.jpg", w: 960, h: 720, alt: "Structura unui foișor mare din lemn, în timpul montajului" },
+      { src: "/lucrari/pavilion-lemn-constructie.jpg", w: 960, h: 540, alt: "Echipa montează căpriorii unui foișor din lemn" },
+      { src: "/lucrari/pergola-lemn.jpg", w: 949, h: 949, alt: "Pergolă din lemn masiv în fața unei case" },
+      { src: "/lucrari/fundatie-beton-foisor.jpg", w: 960, h: 720, alt: "Fundația din beton turnată pentru un foișor" },
+    ],
+  },
+];
+
+export const allPhotos = projects.flatMap((p) => p.photos);
+
+// Previzualizarea de pe prima pagină
+export const galleryPreview: Photo[] = [
+  projects[0].photos[0],
+  projects[1].photos[0],
+  projects[0].photos[1],
+  projects[1].photos[1],
 ];
 
 export const mainServices = services.filter((s) => s.main);

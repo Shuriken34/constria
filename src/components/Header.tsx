@@ -5,7 +5,7 @@ import { Logo } from "./Logo";
 
 const nav = [
   { href: "/#servicii", label: "Servicii" },
-  { href: "/#lucrari", label: "Lucrări" },
+  { href: "/lucrari/", label: "Lucrări" },
   { href: "/#cum-lucram", label: "Cum lucrăm" },
   { href: "/#oferta", label: "Contact" },
 ];

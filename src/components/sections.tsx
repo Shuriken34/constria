@@ -1,6 +1,7 @@
 import Image from "next/image";
+import Link from "next/link";
 import { ArrowUpRight, Phone, Plus } from "lucide-react";
-import { gallery, mainServices, media, otherServices, site, steps } from "@/lib/site";
+import { allPhotos, galleryPreview, mainServices, media, otherServices, site, steps } from "@/lib/site";
 import { HeroVideo } from "./HeroVideo";
 
 const gutter = "px-[clamp(16px,4vw,48px)]";
@@ -16,7 +17,7 @@ function RoofTick({ className = "h-[0.45em] w-[0.8em]" }: { className?: string }
   );
 }
 
-function Eyebrow({ children, className = "text-muted" }: { children: React.ReactNode; className?: string }) {
+export function Eyebrow({ children, className = "text-muted" }: { children: React.ReactNode; className?: string }) {
   return (
     <p className={`reveal flex items-center gap-3 text-[0.8rem] font-extrabold uppercase tracking-[0.16em] ${className}`}>
       <span className="h-px w-10 bg-current" aria-hidden="true" />
@@ -343,9 +344,10 @@ export function Process() {
   );
 }
 
-/* ---------- Lucrări realizate ---------- */
+/* ---------- Lucrări realizate (previzualizare pe prima pagină) ---------- */
 
 export function Gallery() {
+  const preview = galleryPreview;
   return (
     <section id="lucrari" className="pb-[clamp(72px,10vw,140px)]">
       <div className={wrap}>
@@ -355,23 +357,34 @@ export function Gallery() {
             <h2 className="reveal display mt-4 text-[clamp(2.8rem,7vw,6.5rem)]">Din lucrările noastre</h2>
           </div>
           <p className="reveal max-w-[40ch] text-lg leading-relaxed text-muted">
-            Foișoare și pergole construite de echipa Constria, de la fundație până la acoperiș.
+            Acoperișuri schimbate, foișoare și pergole construite de echipa Constria.
           </p>
         </div>
-        <ul className="mt-12 columns-1 gap-3.5 sm:columns-2 lg:columns-3">
-          {gallery.map((g) => (
-            <li key={g.src} className="reveal mb-3.5 break-inside-avoid overflow-hidden rounded-[18px]">
-              <Image
-                src={g.src}
-                alt={g.alt}
-                width={g.w}
-                height={g.h}
-                sizes="(min-width:1024px) 33vw, (min-width:640px) 50vw, 100vw"
-                className="h-auto w-full"
-              />
+        <ul className="mt-12 grid grid-cols-2 gap-3.5 lg:grid-cols-4">
+          {preview.map((g) => (
+            <li key={g.src} className="reveal">
+              <Link
+                href="/lucrari/"
+                className="group relative block aspect-[4/5] overflow-hidden rounded-[18px]"
+              >
+                <Image
+                  src={g.src}
+                  alt={g.alt}
+                  fill
+                  sizes="(min-width:1024px) 25vw, 50vw"
+                  className="object-cover transition-transform duration-700 ease-[var(--ease-out)] group-hover:scale-[1.05]"
+                />
+              </Link>
             </li>
           ))}
         </ul>
+        <div className="reveal mt-8 flex flex-wrap items-center gap-4">
+          <Link href="/lucrari/" className={`${pill} bg-plum-900 text-cream transition-colors hover:bg-red-strong`}>
+            Vezi toate lucrările
+            <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
+          </Link>
+          <span className="text-muted">{allPhotos.length} fotografii</span>
+        </div>
       </div>
     </section>
   );
