@@ -14,9 +14,9 @@ const figtree = Figtree({
 });
 
 export const metadata: Metadata = {
-  title: "Constria — acoperișuri, garduri, foișoare și terase",
+  title: "Constria — schimbare acoperiș, foișoare și garduri",
   description:
-    "Constria construiește acoperișuri noi, schimbă și vopsește acoperișuri, montează garduri de orice tip și construiește foișoare și terase. Cere o ofertă.",
+    "Constria schimbă acoperișuri vechi cu unele noi, construiește foișoare din lemn și montează garduri de orice tip. Facem și acoperișuri noi, vopsire de tablă și terase. Cere o ofertă: 0740 293 991.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

@@ -3,7 +3,7 @@
 import { useActionState, useEffect, useRef } from "react";
 import { Check, Loader2, Send } from "lucide-react";
 import { submitQuote, type QuoteState } from "@/lib/quote";
-import { services, site } from "@/lib/site";
+import { mainServices, otherServices, site } from "@/lib/site";
 
 const initial: QuoteState = { status: "idle" };
 
@@ -74,10 +74,17 @@ export function QuoteForm() {
         <select id="service" name="service" required defaultValue="" ref={serviceRef} className={field}
           aria-invalid={!!e.service} aria-describedby={e.service ? "service-err" : undefined}>
           <option value="" disabled>Alege lucrarea</option>
-          {services.map((s) => (
-            <option key={s.id} value={s.id}>{s.title}</option>
-          ))}
-          <option value="altceva">Altceva</option>
+          <optgroup label="Lucrări principale">
+            {mainServices.map((s) => (
+              <option key={s.id} value={s.id}>{s.title}</option>
+            ))}
+          </optgroup>
+          <optgroup label="Alte servicii">
+            {otherServices.map((s) => (
+              <option key={s.id} value={s.id}>{s.title}</option>
+            ))}
+            <option value="altceva">Altceva</option>
+          </optgroup>
         </select>
         <FieldError id="service-err" msg={e.service} />
       </div>

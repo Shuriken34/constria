@@ -10,7 +10,7 @@ export function Footer() {
         <div>
           <LogoMark className="h-12 w-12" />
           <p className="mt-5 max-w-[34ch] leading-relaxed">
-            Acoperișuri noi, schimbare și vopsire de acoperișuri, garduri de orice tip, foișoare și terase.
+            Schimbare acoperiș, foișoare și garduri. Pe lângă ele: acoperișuri noi, vopsire de tablă și terase.
           </p>
         </div>
         <div>

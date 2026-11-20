@@ -12,8 +12,8 @@ export default function NotFound() {
           <p className="display text-[clamp(6rem,22vw,16rem)] leading-[0.8] text-red">404</p>
           <h1 className="display mt-6 text-[clamp(2.4rem,6vw,5rem)]">Pagina nu mai există</h1>
           <p className="mt-5 max-w-[48ch] text-lg leading-relaxed text-muted">
-            Constria nu mai este un marketplace de materiale. Acum construim acoperișuri, garduri, foișoare și
-            terase.
+            Constria nu mai este un marketplace de materiale. Acum schimbăm acoperișuri, construim foișoare
+            și montăm garduri.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Link
