@@ -10,7 +10,7 @@ import { projects, site } from "@/lib/site";
 export const metadata: Metadata = {
   title: "Lucrări realizate — Constria",
   description:
-    "Fotografii cu foișoare, pergole și acoperișuri construite de echipa Constria. Cere o ofertă: 0740 293 991.",
+    "Fotografii cu foișoare, pergole și acoperișuri construite de echipa Constria, oriunde în România. Cere o ofertă: 0740 293 991.",
 };
 
 const wrap = "mx-auto w-full max-w-[1360px] px-[clamp(16px,4vw,48px)]";

@@ -1,5 +1,5 @@
 // Datele de contact și conținutul site-ului Constria.
-// TODO: înlocuiește zona cu cea reală (telefonul, emailul și programul sunt reale).
+// Date reale ale firmei: telefon, email, program și zona în care lucrăm.
 
 export const site = {
   name: "Constria",
@@ -7,7 +7,7 @@ export const site = {
   phoneHref: "tel:+40740293991",
   whatsappHref: "https://wa.me/40740293991",
   email: "contact@constria.ro",
-  area: "Județul tău și împrejurimi",
+  area: "Oriunde în România",
   hours: "Non-stop, 24/7",
 };
 
