@@ -20,12 +20,13 @@ export const media = {
   // TODO: înlocuiește-le cu clipuri cu lucrările voastre (tablă maro pe case românești, foișor în construcție):
   // pune fișierele .mp4 în /public/video/ și scrie aici "/video/nume.mp4".
   heroClips: [
-    // Casă cu acoperiș din țiglă metalică maro, jgheaburi maro și streașină din lemn (Pexels)
-    "https://videos.pexels.com/video-files/5644254/5644254-hd_1280_720_25fps.mp4",
+    // Casă cu acoperiș din țiglă metalică maro, jgheaburi maro și streașină din lemn
+    // (Pexels 5644254, primele 6 secunde, tăiat cu ffmpeg)
+    "/video/acoperis.mp4",
     // Foișor în construcție, lucrare Constria (de pe TikTok, convertit în H.264 cu ffmpeg)
     "/video/foisor.mp4",
   ],
-  heroPoster: "https://images.pexels.com/videos/5644254/pexels-photo-5644254.jpeg?auto=compress&cs=tinysrgb&w=1600",
+  heroPoster: "/video/acoperis-poster.jpg",
   roofBand: "/lucrari/acoperis-tigla-maro-vedere-sus.jpg",
   gazeboBand: "/lucrari/foisor-romanesc-terminat.jpg",
 };
