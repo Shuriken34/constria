@@ -19,8 +19,12 @@ export const media = {
   // Clipurile din prima secțiune rulează pe rând, în ordinea de aici.
   // TODO: înlocuiește-le cu clipuri cu lucrările voastre (tablă maro pe case românești, foișor în construcție):
   // pune fișierele .mp4 în /public/video/ și scrie aici "/video/nume.mp4".
-  heroClips: ["https://videos.pexels.com/video-files/13361432/13361432-hd_1280_720_60fps.mp4"],
-  heroPoster: px("37704251/pexels-photo-37704251/free-photo-of-professional-roofer-working-safely-on-a-building-roof.jpeg?auto=compress&cs=tinysrgb&w=1600"),
+  heroClips: [
+    // Casă cu acoperiș din țiglă metalică maro, jgheaburi maro și streașină din lemn (Pexels)
+    "https://videos.pexels.com/video-files/5644254/5644254-hd_1280_720_25fps.mp4",
+    // TODO: adaugă aici clipul cu foișorul, ex. "/video/foisor.mp4" (fișierul în public/video/)
+  ],
+  heroPoster: "https://images.pexels.com/videos/5644254/pexels-photo-5644254.jpeg?auto=compress&cs=tinysrgb&w=1600",
   roofBand: "/lucrari/acoperis-tigla-maro-vedere-sus.jpg",
   gazeboBand: "/lucrari/foisor-romanesc-terminat.jpg",
 };
