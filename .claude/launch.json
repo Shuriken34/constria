@@ -2,7 +2,13 @@
   "version": "0.0.1",
   "configurations": [
     {
-      "name": "constria",
+      "name": "constria-dev",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev"],
+      "port": 3000
+    },
+    {
+      "name": "constria-prod",
       "runtimeExecutable": "node",
       "runtimeArgs": ["server.js"],
       "port": 3000

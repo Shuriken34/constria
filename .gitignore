@@ -1,12 +1,47 @@
-node_modules/
-data/
-# Liste de prospectare (date de contact ale altor firme) – nu se urcă în Git
-outreach/
-public/uploads/*
-!public/uploads/.gitkeep
-# Fișiere de mediu: ignorate implicit (pot conține secrete)
-.env
-.env.*
-# Excepții permise în Git: doar valori publice, fără chei secrete
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# testing
+/coverage
+
+# next.js
+/.next/
+# /out/ se urcă în Git intenționat: Hostinger servește site-ul din el (vezi server.js)
+
+# production
+/build
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# env files (can opt-in for committing if needed)
+.env*
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
 !.env.example
 !.env.production
+
+# arhive
+*.zip

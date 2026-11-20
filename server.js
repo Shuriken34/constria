@@ -1,106 +1,99 @@
-// Constria - server principal
-const path = require('node:path');
-const fs = require('node:fs');
+// Server minim pentru Hostinger (Node.js hosting): servește site-ul static din `out/`.
+// `out/` se generează cu `npm run build` și este inclus în Git, ca site-ul să pornească
+// și dacă Hostinger nu rulează pasul de build. Nu are dependențe externe.
 
-// Variabilele de mediu (Node 21.7+ le citește nativ). Valorile deja setate în sistem au prioritate,
-// apoi .env (local), apoi .env.production când NODE_ENV=production.
-const envFiles = ['.env'];
-if (process.env.NODE_ENV === 'production') envFiles.push('.env.production');
-for (const name of envFiles) {
-  const file = path.join(__dirname, name);
-  if (!fs.existsSync(file)) continue;
-  for (const [k, v] of Object.entries(require('node:util').parseEnv(fs.readFileSync(file, 'utf8')))) {
-    if (process.env[k] === undefined) process.env[k] = v;
-  }
-}
+"use strict";
 
-const crypto = require('node:crypto');
-const express = require('express');
-const cookieSession = require('cookie-session');
+const http = require("node:http");
+const fs = require("node:fs");
+const path = require("node:path");
 
-const helpers = require('./src/helpers');
-const data = require('./src/data');
-const { loadUser, csrf, verifyCsrf, flashLocals } = require('./src/middleware');
-const analytics = require('./src/analytics');
-
-const app = express();
+const ROOT = path.join(__dirname, "out");
 const PORT = Number(process.env.PORT) || 3000;
-const isProd = process.env.NODE_ENV === 'production';
 
-// Cheie de sesiune: din mediu sau generată și păstrată local
-function sessionSecret() {
-  if (process.env.SESSION_SECRET) return process.env.SESSION_SECRET;
-  const f = path.join(__dirname, 'data', '.secret');
-  fs.mkdirSync(path.dirname(f), { recursive: true });
-  if (!fs.existsSync(f)) fs.writeFileSync(f, crypto.randomBytes(32).toString('hex'));
-  return fs.readFileSync(f, 'utf8').trim();
+const TYPES = {
+  ".html": "text/html; charset=utf-8",
+  ".js": "text/javascript; charset=utf-8",
+  ".css": "text/css; charset=utf-8",
+  ".json": "application/json; charset=utf-8",
+  ".txt": "text/plain; charset=utf-8",
+  ".svg": "image/svg+xml",
+  ".ico": "image/x-icon",
+  ".png": "image/png",
+  ".jpg": "image/jpeg",
+  ".jpeg": "image/jpeg",
+  ".webp": "image/webp",
+  ".avif": "image/avif",
+  ".woff2": "font/woff2",
+  ".mp4": "video/mp4",
+};
+
+const SECURITY_HEADERS = {
+  "X-Content-Type-Options": "nosniff",
+  "Referrer-Policy": "strict-origin-when-cross-origin",
+  "X-Frame-Options": "SAMEORIGIN",
+};
+
+// Caută fișierul pentru o adresă: /cale -> /cale, /cale.html, /cale/index.html
+function resolveFile(urlPath) {
+  let decoded;
+  try {
+    decoded = decodeURIComponent(urlPath);
+  } catch {
+    return null;
+  }
+  const safe = path.normalize(decoded).replace(/^([/\\])+/, "");
+  const base = path.join(ROOT, safe);
+  if (base !== ROOT && !base.startsWith(ROOT + path.sep)) return null; // fără ieșiri din out/
+
+  for (const candidate of [base, base + ".html", path.join(base, "index.html")]) {
+    try {
+      if (fs.statSync(candidate).isFile()) return candidate;
+    } catch {
+      /* nu există, încercăm următorul */
+    }
+  }
+  return null;
 }
 
-const SECRET = sessionSecret();
+function send(res, status, file, method) {
+  const ext = path.extname(file).toLowerCase();
+  const headers = {
+    ...SECURITY_HEADERS,
+    "Content-Type": TYPES[ext] || "application/octet-stream",
+    "Cache-Control": file.includes(`${path.sep}_next${path.sep}static${path.sep}`)
+      ? "public, max-age=31536000, immutable"
+      : ext === ".html"
+        ? "no-cache"
+        : "public, max-age=3600",
+  };
+  res.writeHead(status, headers);
+  if (method === "HEAD") return res.end();
+  fs.createReadStream(file).pipe(res);
+}
 
-app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, 'views'));
-app.set('trust proxy', 1);
-app.disable('x-powered-by');
+const server = http.createServer((req, res) => {
+  if (req.method !== "GET" && req.method !== "HEAD") {
+    res.writeHead(405, { Allow: "GET, HEAD" });
+    return res.end();
+  }
 
-app.use((req, res, next) => {
-  res.set({
-    'X-Content-Type-Options': 'nosniff',
-    'X-Frame-Options': 'SAMEORIGIN',
-    'Referrer-Policy': 'strict-origin-when-cross-origin',
-    'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
-  });
-  next();
+  const urlPath = new URL(req.url, "http://localhost").pathname;
+  const file = resolveFile(urlPath);
+  if (file) return send(res, 200, file, req.method);
+
+  // Adresele vechi ale marketplace-ului (anunțuri, cont, categorii) ajung pe pagina 404 a site-ului nou
+  const notFound = path.join(ROOT, "404.html");
+  if (fs.existsSync(notFound)) return send(res, 404, notFound, req.method);
+
+  res.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" });
+  res.end("Pagina nu există.");
 });
 
-app.use(express.static(path.join(__dirname, 'public'), { maxAge: isProd ? '7d' : 0 }));
-app.use(express.urlencoded({ extended: false, limit: '200kb' }));
-app.use(express.json({ limit: '100kb' }));
-app.use(cookieSession({
-  name: 'co_sess',
-  keys: [SECRET],
-  maxAge: 30 * 24 * 3600 * 1000,
-  httpOnly: true,
-  sameSite: 'lax',
-  secure: isProd,
-}));
+if (!fs.existsSync(path.join(ROOT, "index.html"))) {
+  console.error("Lipsește out/index.html. Rulează `npm run build` înainte de `npm start`.");
+}
 
-// Variabile disponibile în toate șabloanele
-app.use((req, res, next) => {
-  Object.assign(res.locals, helpers, data, {
-    path: req.path,
-    query: req.query,
-    title: null,
-    description: 'Constria – piața online unde cumperi și vinzi materiale de construcții în toată România. Fără comisioane, direct de la vânzător.',
-    year: new Date().getFullYear(),
-    user: null,
-    unread: 0,
-    flash: [],
-    csrf: '',
-  });
-  next();
+server.listen(PORT, () => {
+  console.log(`Constria rulează pe http://localhost:${PORT}`);
 });
-
-app.use(loadUser);
-app.use(analytics.pageviews(SECRET));
-app.use(csrf);
-app.use(flashLocals);
-app.use(verifyCsrf);
-
-app.use(require('./src/routes/public'));
-app.use(require('./src/routes/auth'));
-app.use(require('./src/routes/account'));
-app.use('/admin', require('./src/routes/admin'));
-
-app.use((req, res) => {
-  res.status(404).render('error', { title: 'Pagina nu există', code: 404, message: 'Se pare că pagina pe care o cauți a fost mutată sau nu a existat niciodată.' });
-});
-
-// eslint-disable-next-line no-unused-vars
-app.use((err, req, res, next) => {
-  console.error(err.supabase || err);
-  if (res.headersSent) return next(err);
-  res.status(500).render('error', { title: 'Eroare', code: 500, message: 'A apărut o eroare neașteptată. Încearcă din nou în câteva momente.' });
-});
-
-app.listen(PORT, () => console.log(`Constria rulează pe http://localhost:${PORT}`));

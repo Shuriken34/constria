@@ -1,0 +1,100 @@
+@import "tailwindcss";
+
+/* Identitatea Constria, preluată de pe constria.ro */
+@theme {
+  --color-plum-950: #2e001a;
+  --color-plum-900: #4a002a;
+  --color-plum-800: #5e0034;
+  --color-plum-700: #74003d;
+  --color-plum-600: #8d1a52;
+  --color-beige: #f6e1ce;
+  --color-beige-200: #efd3ba;
+  --color-beige-300: #e6c3a5;
+  --color-cream: #fff3e4;
+  --color-red: #f00037;
+  --color-red-strong: #c8002e;
+  --color-muted: #6e3a55;
+
+  --font-display: var(--font-anton), Impact, "Arial Narrow", sans-serif;
+  --font-sans: var(--font-figtree), system-ui, sans-serif;
+
+  --radius-tile: 18px;
+  --radius-lg: 28px;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+html {
+  scroll-padding-top: 6rem;
+}
+
+body {
+  background: var(--color-beige);
+  color: var(--color-plum-900);
+  font-family: var(--font-sans);
+}
+
+.display {
+  font-family: var(--font-display);
+  font-weight: 400;
+  text-transform: uppercase;
+  line-height: 0.95;
+  letter-spacing: 0.005em;
+}
+
+:focus-visible {
+  outline: 3px solid var(--color-red);
+  outline-offset: 3px;
+}
+
+/* Bandă cu servicii care curge continuu */
+.marquee-track {
+  animation: marquee 32s linear infinite;
+}
+.marquee:hover .marquee-track {
+  animation-play-state: paused;
+}
+@keyframes marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* Cuvintele manifestului se aprind pe rând, la scroll */
+.fill-text .w {
+  color: color-mix(in srgb, var(--color-plum-900) 18%, transparent);
+  transition: color 0.35s var(--ease-out);
+}
+.fill-text .w.is-on {
+  color: var(--color-plum-900);
+}
+.fill-text .w.is-on.accent {
+  color: var(--color-red-strong);
+}
+
+/* Elementele animate pornesc ascunse doar când JS-ul rulează */
+.js .reveal {
+  opacity: 0;
+  transform: translateY(32px);
+}
+.js .hero-rise {
+  transform: translateY(110%);
+}
+.js .hero-fade {
+  opacity: 0;
+  transform: translateY(24px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track {
+    animation: none;
+  }
+  .js .reveal,
+  .js .hero-rise,
+  .js .hero-fade {
+    opacity: 1;
+    transform: none;
+  }
+  .fill-text .w {
+    color: var(--color-plum-900);
+  }
+}

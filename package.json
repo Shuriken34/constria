@@ -1,23 +1,35 @@
 {
   "name": "constria",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "private": true,
-  "description": "Constria - piața online de materiale de construcții din România",
+  "description": "Constria - acoperișuri, garduri, foișoare și terase",
   "main": "server.js",
-  "type": "commonjs",
   "scripts": {
+    "dev": "next dev",
+    "build": "next build",
     "start": "node server.js",
-    "dev": "node --watch server.js"
+    "lint": "eslint"
   },
   "engines": {
     "node": ">=20.12"
   },
   "dependencies": {
-    "@supabase/ssr": "0.12.7",
-    "@supabase/supabase-js": "2.119.0",
-    "cookie-session": "^2.1.1",
-    "ejs": "^7.0.2",
-    "express": "^5.3.0",
-    "multer": "^2.5.0"
+    "@gsap/react": "2.1.2",
+    "@supabase/supabase-js": "2.119.2",
+    "@tailwindcss/turbopack": "4.3.3",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "gsap": "3.13.0",
+    "lucide-react": "0.460.0",
+    "next": "16.4.6",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "tailwindcss": "4.3.3",
+    "typescript": "^5"
+  },
+  "devDependencies": {
+    "eslint": "^9",
+    "eslint-config-next": "16.4.6"
   }
 }
