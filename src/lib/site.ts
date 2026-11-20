@@ -23,7 +23,7 @@ export const media = {
     // Foișor în construcție, lucrare Constria (de pe TikTok, convertit în H.264 cu ffmpeg)
     "/video/foisor.mp4",
     // Casă cu acoperiș din țiglă metalică maro, jgheaburi maro și streașină din lemn
-    // (Pexels 5644254, primele 6 secunde, tăiat cu ffmpeg)
+    // (Pexels 5644254, primele 10 secunde, tăiat cu ffmpeg)
     "/video/acoperis.mp4",
   ],
   heroPoster: "/video/foisor-poster.jpg",
