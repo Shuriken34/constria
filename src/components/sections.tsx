@@ -53,7 +53,7 @@ export function Hero() {
               Acoperiș nou. Foișor nou. Toate la calitate superioară.
             </p>
             <p className="mt-3 text-lg leading-relaxed text-cream/90">
-              Schimbăm acoperișul vechi cu tablă nouă, de la șarpantă până la jgheaburi, și construim foișoare
+              Construim și schimbăm acoperișul vechi cu tablă nouă, de la șarpantă până la jgheaburi, și construim foișoare
               tradiționale din lemn masiv, cu acoperiș asortat casei. Lucrăm cu echipa noastră și cu materiale de
               calitate, iar la final primești garanție scrisă.
             </p>
