@@ -56,7 +56,7 @@ function resolveFile(urlPath) {
   return null;
 }
 
-function send(res, status, file, method) {
+function send(req, res, status, file, method) {
   const ext = path.extname(file).toLowerCase();
   const headers = {
     ...SECURITY_HEADERS,
@@ -67,7 +67,27 @@ function send(res, status, file, method) {
         ? "no-cache"
         : "public, max-age=3600",
   };
-  res.writeHead(status, headers);
+  const size = fs.statSync(file).size;
+  headers["Accept-Ranges"] = "bytes";
+
+  // Cereri pe bucăți (Range): Safari pe iPhone le cere obligatoriu pentru video
+  const range = status === 200 && req.headers.range;
+  const m = range && /^bytes=(\d*)-(\d*)$/.exec(range);
+  if (m && (m[1] || m[2])) {
+    let start = m[1] ? Number(m[1]) : size - Number(m[2]);
+    let end = m[1] && m[2] ? Number(m[2]) : size - 1;
+    start = Math.max(0, start);
+    end = Math.min(end, size - 1);
+    if (start > end || start >= size) {
+      res.writeHead(416, { ...headers, "Content-Range": `bytes */${size}` });
+      return res.end();
+    }
+    res.writeHead(206, { ...headers, "Content-Range": `bytes ${start}-${end}/${size}`, "Content-Length": end - start + 1 });
+    if (method === "HEAD") return res.end();
+    return fs.createReadStream(file, { start, end }).pipe(res);
+  }
+
+  res.writeHead(status, { ...headers, "Content-Length": size });
   if (method === "HEAD") return res.end();
   fs.createReadStream(file).pipe(res);
 }
@@ -80,11 +100,11 @@ const server = http.createServer((req, res) => {
 
   const urlPath = new URL(req.url, "http://localhost").pathname;
   const file = resolveFile(urlPath);
-  if (file) return send(res, 200, file, req.method);
+  if (file) return send(req, res, 200, file, req.method);
 
   // Adresele vechi ale marketplace-ului (anunțuri, cont, categorii) ajung pe pagina 404 a site-ului nou
   const notFound = path.join(ROOT, "404.html");
-  if (fs.existsSync(notFound)) return send(res, 404, notFound, req.method);
+  if (fs.existsSync(notFound)) return send(req, res, 404, notFound, req.method);
 
   res.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" });
   res.end("Pagina nu există.");

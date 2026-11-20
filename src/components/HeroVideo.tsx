@@ -45,6 +45,10 @@ export function HeroVideo({ clips, poster }: { clips: string[]; poster: string }
           onPlay={() => setPlaying(true)}
           onPause={() => setPlaying(false)}
           onEnded={next}
+          onError={() => {
+            // Un clip care nu poate fi redat (format nesuportat, link stricat) e sărit
+            if (clips.length > 1) next();
+          }}
         />
         <div className="absolute inset-0 bg-plum-700 opacity-40 mix-blend-multiply" />
         <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(46,0,26,0.55)_0%,rgba(46,0,26,0.25)_40%,rgba(46,0,26,0.85)_100%)]" />
