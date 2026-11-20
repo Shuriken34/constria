@@ -39,7 +39,7 @@ export function Hero() {
         <h1 className="display mt-4 text-[clamp(3.2rem,11.5vw,13rem)] [text-shadow:0_4px_40px_rgba(46,0,26,0.35)]">
           <span data-hero-line="1" className="-my-[0.12em] block overflow-hidden py-[0.12em]">
             <span className="hero-rise block whitespace-nowrap">Construiește</span>
-          </span>
+          </span>{" "}
           <span data-hero-line="-1" className="-mb-[0.12em] mt-[0.32em] block overflow-hidden py-[0.12em] text-right">
             <span className="hero-rise block whitespace-nowrap">
               ca la <span className="text-red">carte</span>
