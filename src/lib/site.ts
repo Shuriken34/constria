@@ -22,7 +22,7 @@ export const media = {
   heroClips: ["https://videos.pexels.com/video-files/13361432/13361432-hd_1280_720_60fps.mp4"],
   heroPoster: px("37704251/pexels-photo-37704251/free-photo-of-professional-roofer-working-safely-on-a-building-roof.jpeg?auto=compress&cs=tinysrgb&w=1600"),
   roofBand: px("32050401/pexels-photo-32050401/free-photo-of-silhouetted-workers-on-rooftop-against-blue-sky.jpeg"),
-  gazeboBand: px("6903862/pexels-photo-6903862.jpeg"),
+  gazeboBand: "/lucrari/foisor-romanesc-terminat.jpg",
 };
 
 export type Service = {
@@ -71,8 +71,8 @@ export const services: Service[] = [
       "Dimensiuni și formă la cerere",
       "Opțional: loc pentru grătar sau bucătărie de vară",
     ],
-    image: px("11114385/pexels-photo-11114385.jpeg"),
-    alt: "Foișor din lemn cu masă rustică într-o grădină verde",
+    image: "/lucrari/foisor-romanesc-montaj-acoperis.jpg",
+    alt: "Foișor din lemn în construcție, cu acoperiș din țiglă metalică maro, lucrare Constria",
   },
   {
     id: "garduri",
@@ -120,6 +120,18 @@ export const services: Service[] = [
     image: px("8180361/pexels-photo-8180361.jpeg"),
     alt: "Terasă din lemn cu scaune și masă, cu vedere spre pădure",
   },
+];
+
+// Lucrări realizate de Constria (din pagina de Facebook). Primele apar primele în galerie.
+export const gallery = [
+  { src: "/lucrari/foisor-romanesc-terminat.jpg", w: 1079, h: 1160, alt: "Foișor din lemn cu acoperiș din țiglă metalică maro, lângă o casă albă" },
+  { src: "/lucrari/foisor-romanesc-montaj-acoperis.jpg", w: 756, h: 700, alt: "Montajul acoperișului din țiglă metalică maro pe un foișor din lemn" },
+  { src: "/lucrari/foisor-tavan-lemn.jpg", w: 971, h: 2048, alt: "Tavanul din lemn al unui foișor, văzut de dedesubt" },
+  { src: "/lucrari/pavilion-lemn-casa.jpg", w: 1200, h: 568, alt: "Foișor din lemn lipit de casă, peste terasă" },
+  { src: "/lucrari/pavilion-lemn-structura.jpg", w: 960, h: 720, alt: "Structura unui foișor mare din lemn, în timpul montajului" },
+  { src: "/lucrari/pavilion-lemn-constructie.jpg", w: 960, h: 540, alt: "Echipa montează căpriorii unui foișor din lemn" },
+  { src: "/lucrari/pergola-lemn.jpg", w: 949, h: 949, alt: "Pergolă din lemn masiv în fața unei case" },
+  { src: "/lucrari/fundatie-beton-foisor.jpg", w: 960, h: 720, alt: "Fundația din beton turnată pentru un foișor" },
 ];
 
 export const mainServices = services.filter((s) => s.main);

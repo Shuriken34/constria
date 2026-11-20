@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { ArrowUpRight, Phone, Plus } from "lucide-react";
-import { mainServices, media, otherServices, site, steps } from "@/lib/site";
+import { gallery, mainServices, media, otherServices, site, steps } from "@/lib/site";
 import { HeroVideo } from "./HeroVideo";
 
 const gutter = "px-[clamp(16px,4vw,48px)]";
@@ -338,6 +338,40 @@ export function Process() {
             ))}
           </ol>
         </div>
+      </div>
+    </section>
+  );
+}
+
+/* ---------- Lucrări realizate ---------- */
+
+export function Gallery() {
+  return (
+    <section id="lucrari" className="pb-[clamp(72px,10vw,140px)]">
+      <div className={wrap}>
+        <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+          <div>
+            <Eyebrow>Lucrări realizate</Eyebrow>
+            <h2 className="reveal display mt-4 text-[clamp(2.8rem,7vw,6.5rem)]">Din lucrările noastre</h2>
+          </div>
+          <p className="reveal max-w-[40ch] text-lg leading-relaxed text-muted">
+            Foișoare și pergole construite de echipa Constria, de la fundație până la acoperiș.
+          </p>
+        </div>
+        <ul className="mt-12 columns-1 gap-3.5 sm:columns-2 lg:columns-3">
+          {gallery.map((g) => (
+            <li key={g.src} className="reveal mb-3.5 break-inside-avoid overflow-hidden rounded-[18px]">
+              <Image
+                src={g.src}
+                alt={g.alt}
+                width={g.w}
+                height={g.h}
+                sizes="(min-width:1024px) 33vw, (min-width:640px) 50vw, 100vw"
+                className="h-auto w-full"
+              />
+            </li>
+          ))}
+        </ul>
       </div>
     </section>
   );

@@ -2,7 +2,7 @@ import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
 import { Motion } from "@/components/Motion";
 import { Quote } from "@/components/Quote";
-import { GazeboBand, Hero, Manifest, Marquee, Process, RoofBand, Services } from "@/components/sections";
+import { Gallery, GazeboBand, Hero, Manifest, Marquee, Process, RoofBand, Services } from "@/components/sections";
 
 export default function Home() {
   return (
@@ -18,6 +18,7 @@ export default function Home() {
         <Hero />
         <Marquee />
         <Services />
+        <Gallery />
         <Manifest />
         <RoofBand />
         <Process />
